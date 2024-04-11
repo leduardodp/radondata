@@ -50,8 +50,8 @@ Visit `http://localhost:85` in your browser. The app should be up & running.
 
 ```bash
 $ # Get the code
-$ git clone https://github.com/app-generator/django-dashboard-kit.git
-$ cd django-dashboard-kit
+$ git clone https://github.com/leduardodp/radondata
+$ cd django-dashboard
 $
 $ # Virtualenv modules installation (Unix based systems)
 $ virtualenv env
