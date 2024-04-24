@@ -11,7 +11,6 @@ Open-source **[Django Dashboard](https://appseed.us/admin-dashboards/django)** g
 - Modular design, clean codebase
 - `Session-Based Authentication`, Forms validation
 - `Deployment`: **Docker**, Gunicorn / Nginx
-- Support via **Github** and [Discord](https://discord.gg/fZC6hup).
 
 <br />
 
