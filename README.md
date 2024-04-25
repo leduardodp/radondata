@@ -50,8 +50,8 @@ $ virtualenv env
 $ source env/bin/activate
 $
 $ # Virtualenv modules installation (Windows based systems)
-$ # virtualenv env
-$ # .\env\Scripts\activate
+$ virtualenv env
+$ .\env\Scripts\activate
 $
 $ # Install modules
 $ # SQLIte version
