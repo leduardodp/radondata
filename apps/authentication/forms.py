@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm , UserChangeForm
 from django.contrib.auth.models import User
-
+from .models import CustomUser
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -33,7 +33,7 @@ class SignUpForm(UserCreationForm):
     email = forms.EmailField(
         widget=forms.EmailInput(
             attrs={
-                "placeholder": "Email",
+                "placeholder": "Correo electrónico",
                 "class": "form-control"
             }
         ))
@@ -53,5 +53,55 @@ class SignUpForm(UserCreationForm):
         ))
 
     class Meta:
-        model = User
+        model = CustomUser
         fields = ('username', 'email', 'password1', 'password2')
+
+
+class UpdateProfileForm(UserChangeForm):
+    first_name = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Nombre",
+                "class": "form-control"
+            }
+        ))
+    last_name = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Apellidos",
+                "class": "form-control"
+            }
+        ))
+    username = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Usuario",
+                "class": "form-control"
+            }
+        ))
+    email = forms.CharField(
+        widget=forms.EmailInput(
+            attrs={
+                "placeholder": "Correo electrónico",
+                "class": "form-control"
+            }
+        ))
+    phone = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Nº teléfono",
+                "class": "form-control"
+            }
+        ))
+    profile_pic = forms.ImageField(
+        widget=forms.FileInput(
+            attrs={
+                "placeholder": "Foto de perfil",
+                "class": "form-control"
+            }
+        ))
+    
+    class Meta:
+        model = CustomUser
+        fields = ('first_name','last_name','username', 'email', 'phone','profile_pic')
+

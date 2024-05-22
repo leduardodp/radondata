@@ -1,12 +1,14 @@
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
-import random , schedule , time , threading
+import random , schedule , time , threading 
+from django.core.mail import send_mail
+import sqlite3
 
 concentracion = 0.0
 media = 0.0
 
 def clientInflux():
-        # Configuración de la conexión a InfluxDB
+    # Configuración de la conexión a InfluxDB
     bucket = "radon"
     org = "Universidade de Vigo"
     token = "_kl1c-aCdvw7szgGtvufL_B1JhlT_jnXXxBOqo-jLvC_oAJbiFVOVI3-ipyMkfFqG0FXxZgzvXTLpXo1JhLUqA=="
@@ -76,11 +78,45 @@ def read_media_1m():
 def media_funcion():
     return media
 
+
+####Envío de emails ####
+
+
+def get_users():
+    # Conecta a la base de datos SQLite
+    conn = sqlite3.connect('db.sqlite3')
+
+    # Obtén la lista de usuarios
+    cursor = conn.cursor()
+    cursor.execute('SELECT email FROM authentication_customuser')
+    users = cursor.fetchall()
+
+    # Cierra la conexión a la base de datos
+    conn.close()
+
+    # Devuelve la lista de usuarios
+    return [user[0] for user in users]
+    
+
+def send_email():
+    subject = 'Concentración media de radón'
+    message = f'Aquí están los datos de concentracion media en los ultimos 10 min: \n\n{media} Bq/m3'
+    email_from = 'ldagostino@alumnos.uvigo.es'
+    recipient_list = get_users()
+    for user in recipient_list:
+        send_mail(subject, message, email_from, [user])
+
+
+
+
 def data_task():
     
     schedule.every(30).seconds.do(write_data_24h)
     schedule.every(30).seconds.do(read_data_1m) # Programar la tarea para que se ejecute cada 30 segundos
-    schedule.every(30).seconds.do(read_media_1m) 
+    schedule.every(30).seconds.do(read_media_1m)
+
+    schedule.every(30).seconds.do(send_email)
+    #schedule.every().day.at("16:38").do(send_email)
 
     while True: # Ejecutar la planificación en un bucle infinito
         schedule.run_pending()
@@ -89,7 +125,5 @@ def data_task():
 def async_task():
 
     t = threading.Thread(target=data_task)   # Crear un hilo para ejecutar las tareas periódicas 
-
     t.daemon = True  # Hacer que el hilo sea un hilo de fondo, para que se detenga cuando se detenga el programa principal
-
     t.start()    # Iniciar el hilo

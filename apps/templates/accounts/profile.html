@@ -1,0 +1,114 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Perfil {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+	<!-- [ Main Content ] start -->
+	<div class="pc-container">
+		<div class="pcoded-content">
+			<!-- [ breadcrumb ] start -->
+			<div class="page-header">
+				<div class="page-block">
+					<div class="row align-items-center">
+						<div class="col-md-12">
+							<div class="page-header-title">
+								<h5 class="m-b-10">Mi cuenta</h5>
+							</div>
+							<ul class="breadcrumb">
+								<li class="breadcrumb-item"><a href="index.html">Perfil</a></li>
+								<li class="breadcrumb-item">Mi cuenta</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- [ breadcrumb ] end -->
+			<!-- [ Main Content ] start -->
+			<div class="row">
+				<!-- [ sample-page ] start -->
+				<div class="row gutters-sm">
+					<div class="col-md-4 mb-3">
+						<div class="card">
+							<div class="card-header text-center">
+								<h5>Foto de perfil</h5>
+							</div>
+							<div class="card-body">
+								<div class="d-flex flex-column align-items-center text-center">
+							
+									{% if user.profile_pic %}
+				
+										<img src="{{ user.profile_pic.url }}" alt="Admin" class="rounded-circle" width="130">
+				
+									{% else %}
+										<img src="/static/assets/images/user/avatar-4.jpg" alt="Imagen de perfil" class="rounded-circle" width="130">
+									
+									{% endif %}
+							
+						</div>
+					</div>
+				</div>
+			</div>
+					<div class="col-md-6">
+						<div class="card mb-3">
+							<div class="card-header text-center">
+								<h5>Datos de usuario</h5>
+							</div>
+						<div class="card-body">
+							<div class="row">
+							<div class="col-sm-3">
+								<h6 class="mb-0">Nombre </h6>
+							</div>
+							<div class="col-sm-9 text-secondary">
+								{{user.first_name}} {{user.last_name}}
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-3">
+							<h6 class="mb-0">Usuario</h6>
+							</div>
+							<div class="col-sm-9 text-secondary">
+							{{user.username}}
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-3">
+							<h6 class="mb-0">Email</h6>
+							</div>
+							<div class="col-sm-9 text-secondary">
+							{{user.email}}
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-3">
+							<h6 class="mb-0">Teléfono</h6>
+							</div>
+							<div class="col-sm-9 text-secondary">
+							{{user.phone}}
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-12">
+							<a class="btn btn-info " target="__blank" href="{% url 'update-profile' %}">Editar</a>
+							</div>
+							</div>
+						</div>
+					</div>
+				<!-- [ sample-page ] end -->
+			</div>
+			<!-- [ Main Content ] end -->
+		</div>
+	</div>
+	<!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

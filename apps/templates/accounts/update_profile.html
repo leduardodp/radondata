@@ -1,0 +1,62 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Perfil {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<div class="pc-container">
+	<div class="pcoded-content">
+		<!-- [ breadcrumb ] start -->
+		<div class="page-header">
+			<div class="page-block align-items-center">
+				<div class="row ">
+					<div class="col-md-12">
+						<div class="page-header-title">
+							<h5 class="m-b-10">Mi cuenta</h5>
+						</div>
+						<ul class="breadcrumb">
+							<li class="breadcrumb-item"><a href="index.html">Perfil</a></li>
+							<li class="breadcrumb-item">Actualiza tu perfil</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<form action="" method="POST" enctype="multipart/form-data">
+			<h4>¡Mantén tu perfil actualizado!</h4>
+			{% csrf_token %}
+
+			<div class="row">
+				{% for field in form  %}
+
+				{% if field.errors %}
+				<div class="col-md-5">
+					<div class="mb-3">
+						
+						{{field}}
+
+					</div>
+					<small>{{field.errors}}</small>
+				</div>
+				{% else %}
+				<div class="col-md-5">
+					<div class="mb-3">
+						
+						{{field}}
+
+					</div>
+				</div>
+				{% endif %}
+				{% endfor %}
+			</div>
+
+			<button class="btn btn-primary" style="width: 40%">Actualizar perfil</button>
+		</form>
+	</div>
+</div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

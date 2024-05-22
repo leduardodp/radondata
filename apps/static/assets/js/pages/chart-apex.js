@@ -19,7 +19,7 @@ setTimeout(function () {
             colors: ["#7267EF"],
             series: [{
                 name: "Desktops",
-                data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
+                data: [10, 21, 35, 51, 49, 62, 69, 91, 148]
             }],
             title: {
                 text: 'Product Trends by Month',

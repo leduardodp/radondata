@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
-from .forms import LoginForm, SignUpForm
+from .forms import LoginForm, SignUpForm , UpdateProfileForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from .models import CustomUser
 
 # Create your views here.
 
@@ -43,3 +45,24 @@ def register_user(request):
 
     context = {"form":form}
     return render(request, "accounts/register.html", context)
+
+@login_required(login_url="login/")
+def profile(request):
+    user = request.user
+    context={"user": user}
+    return render(request, "accounts/profile.html", context)
+
+@login_required(login_url="login/")
+def update_profile(request):
+    if request.user.is_authenticated:
+        user = request.user
+        form = UpdateProfileForm(instance=user)
+        if request.method == "POST":
+            form = UpdateProfileForm(request.POST, request.FILES, instance=user)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "¡Su perfil ha sido actualizado correctamente!")
+                return redirect("profile")
+    
+    context = {"form":form}
+    return render(request, "accounts/update_profile.html", context)

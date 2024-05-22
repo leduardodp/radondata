@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps'  # Enable the inner home (home)
+    'apps', # Enable the inner home (home)
+    'apps.authentication'
 ]
 
 MIDDLEWARE = [
@@ -129,12 +130,21 @@ STATICFILES_DIRS = (
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#INFLUXDB
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = 'localhost'
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = ""
+EMAIL_PORT = 2525
 
-INFLUXDB_HOST = 'influxdb'
-INFLUXDB_PORT = 8086
-INFLUXDB_USERNAME = None
-INFLUXDB_PASSWORD = None
-INFLUXDB_DATABASE = 'example'
-INFLUXDB_TIMEOUT = 10
+MEDIA_URL='/media/'
+MEDIA_ROOT=os.path.join(BASE_DIR, 'media')
 
+AUTH_USER_MODEL = "authentication.CustomUser"
+
+
+'''#pip install pyopenssl ndg-httpsclient
+EMAIL_USE_SSL = True
+EMAIL_HOST = 'smtp.uvigo.gal'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'your_username@uvigo.es'
+EMAIL_HOST_PASSWORD = 'your_password'''
