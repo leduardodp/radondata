@@ -1,6 +1,6 @@
 from email.headerregistry import Group
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login , logout
 from .forms import LoginForm, SignUpForm , UpdateProfileForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -53,10 +53,22 @@ def register_user(request):
     return render(request, "accounts/register.html", context)
 
 @login_required(login_url="login/")
+def logout_view(request):
+    logout(request)
+    messages.success(request, "Se ha cerrado la sesión correctamente.")
+    return redirect("login")
+
+@login_required(login_url="login/")
 def profile(request):
     user = request.user
     context={"user": user}
     return render(request, "accounts/profile.html", context)
+
+@login_required(login_url="login/")
+def preferences(request):
+    user = request.user
+    context={"user": user}
+    return render(request, "accounts/preferences.html", context)
 
 @login_required(login_url="login/")
 def update_profile(request):
