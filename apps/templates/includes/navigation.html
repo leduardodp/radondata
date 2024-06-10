@@ -19,10 +19,10 @@
 						<a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button"
 							aria-haspopup="false" aria-expanded="false">
 							{% if user.profile_pic %}
-							<img src="{{user.profile_pic.url}}" alt="Imagen de perfil" class="rounded-circle" width="130">
+							<img src="{{user.profile_pic.url}}" alt="Imagen de perfil" class="user-avtar" >
 							{% else %}
-							<img src="/static/assets/images/user/avatar-4.jpg" alt="user-image" class="user-avtar">
-							{% endif %}
+							<img src="/static/assets/images/user/no-avatar.jpg" alt="user-image" class="user-avtar">
+							{% endif %}						
 							<span>
 								<span class="user-name">
 									{{ request.user.username }}

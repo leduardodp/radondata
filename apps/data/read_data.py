@@ -3,6 +3,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 import random , schedule , time , threading 
 from django.core.mail import send_mail
 import sqlite3
+import smtplib
 
 concentracion = 0.0
 media = 0.0
@@ -11,7 +12,7 @@ def clientInflux():
     # Configuración de la conexión a InfluxDB
     bucket = "radon"
     org = "Universidade de Vigo"
-    token = "_kl1c-aCdvw7szgGtvufL_B1JhlT_jnXXxBOqo-jLvC_oAJbiFVOVI3-ipyMkfFqG0FXxZgzvXTLpXo1JhLUqA=="
+    token = "ntbYiWCrZN8xLl-hyZze4zzCZdB28r642Xsommyepwc_H0twV-Ad0wGW5QzvwTT0nH7-EiKx0kXHmMp8JRjqGQ=="
     url="http://localhost:8086"
 
     # Creación de cliente en InfluxDB
@@ -79,7 +80,7 @@ def media_funcion():
     return media
 
 
-####Envío de emails ####
+#### Envío de emails ####
 
 
 def get_users():
@@ -97,14 +98,42 @@ def get_users():
     # Devuelve la lista de usuarios
     return [user[0] for user in users]
     
-
 def send_email():
+
     subject = 'Concentración media de radón'
     message = f'Aquí están los datos de concentracion media en los ultimos 10 min: \n\n{media} Bq/m3'
     email_from = 'ldagostino@alumnos.uvigo.es'
     recipient_list = get_users()
     for user in recipient_list:
         send_mail(subject, message, email_from, [user])
+
+def send_email_uvigo():
+
+    # Configura el servidor SMTP
+    server = smtplib.SMTP('smtp.uvigo.es', 587)
+
+    # Establece una conexión segura con el servidor SMTP
+    server.starttls()
+    # Configura la autenticación SMTP
+    server.login('ldagostino@alumnos.uvigo.es', 'vincioS_9!')
+
+    # Configura el correo electrónico
+    from_email = 'ldagostino@alumnos.uvigo.es'
+    to_email='luiseduardo1997@msn.com'
+    #to_emails = get_users()
+    subject = 'Concentracion media de radon'
+    message = f'Aqui estan los datos de concentracion media en los ultimos 10 min\n\n{media} Bq/m3'
+
+    # Crea el correo electrónico
+    msg = f'Subject: {subject}\n\n{message}'
+    # Envía el correo electrónico
+    server.sendmail(from_email, to_email, msg)
+    # Envía el correo electrónico a cada destinatario
+    ''' for user in to_emails:
+        server.sendmail(from_email, [user], msg)'''
+
+    # Cierra la conexión SMTP
+    server.quit()
 
 
 
@@ -115,7 +144,7 @@ def data_task():
     schedule.every(30).seconds.do(read_data_1m) # Programar la tarea para que se ejecute cada 30 segundos
     schedule.every(30).seconds.do(read_media_1m)
 
-    schedule.every(30).seconds.do(send_email)
+    #schedule.every(30).seconds.do(send_email_uvigo)
     #schedule.every().day.at("16:38").do(send_email)
 
     while True: # Ejecutar la planificación en un bucle infinito

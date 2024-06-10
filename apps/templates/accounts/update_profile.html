@@ -25,10 +25,10 @@
 			</div>
 		</div>
 		<form action="" method="POST" enctype="multipart/form-data">
-			<h4>¡Mantén tu perfil actualizado!</h4>
+			<h4 class="mt-5 ">¡Mantén tu perfil actualizado!</h4>
 			{% csrf_token %}
 
-			<div class="row">
+			<div class="row mt-3">
 				{% for field in form  %}
 
 				{% if field.errors %}
@@ -52,8 +52,10 @@
 				{% endfor %}
 			</div>
 
-			<button class="btn btn-primary" style="width: 40%">Actualizar perfil</button>
+			<button class="btn btn-primary offset-md-3" style="width: 30%">Actualizar perfil</button>
 		</form>
+		</div>
+
 	</div>
 </div>
 {% endblock content %}

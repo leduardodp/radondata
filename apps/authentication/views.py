@@ -1,12 +1,16 @@
+from email.headerregistry import Group
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm, SignUpForm , UpdateProfileForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import CustomUser
+from .decorators import unauthenticated_user
+from django.contrib.auth.models import Group
+
 
 # Create your views here.
 
+@unauthenticated_user
 def login_view(request):
     form = LoginForm(request.POST or None)
     
@@ -26,19 +30,21 @@ def login_view(request):
     context = {"form":form}
     return render(request, "accounts/login.html", context)
 
-
+@unauthenticated_user
 def register_user(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
+            user =form.save()
             username = form.cleaned_data.get("username")
-            raw_password = form.cleaned_data.get("password1")
-            user = authenticate(username=username, password=raw_password)
-            messages.success(request, "¡Su cuenta ha sido creada correctamente!")
+            
+            group = Group.objects.get(name='student')
+            user.groups.add(group)
+
+            messages.success(request, "Usuario creado con éxito, {}\n¡Bienvenido!".format(username))
             return redirect("login/")
 
-        #else:
+        else:
             messages.error(request,' Algo ha ido mal!')
     else:
         form = SignUpForm()

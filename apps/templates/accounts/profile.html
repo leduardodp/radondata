@@ -30,6 +30,14 @@
 			<!-- [ Main Content ] start -->
 			<div class="row">
 				<!-- [ sample-page ] start -->
+				{% if messages %}
+    				{% for message in messages %}
+        				<div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            				{{ message }}
+            				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">	</button>
+			</div>
+    				{% endfor %}
+				{% endif %}
 				<div class="row gutters-sm">
 					<div class="col-md-4 mb-3">
 						<div class="card">
@@ -41,10 +49,10 @@
 							
 									{% if user.profile_pic %}
 				
-										<img src="{{ user.profile_pic.url }}" alt="Admin" class="rounded-circle" width="130">
+										<img src="{{ user.profile_pic.url }}" alt="Admin" class="rounded-circle" 											width="130">
 				
 									{% else %}
-										<img src="/static/assets/images/user/avatar-4.jpg" alt="Imagen de perfil" class="rounded-circle" width="130">
+										<img src="/static/assets/images/user/no-avatar.jpg" alt="Imagen de perfil" 											class="rounded-circle" width="130">
 									
 									{% endif %}
 							
