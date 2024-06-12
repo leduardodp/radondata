@@ -8,6 +8,8 @@ from .decorators import unauthenticated_user
 from django.contrib.auth.models import Group
 
 
+
+
 # Create your views here.
 
 @unauthenticated_user
@@ -64,23 +66,18 @@ def profile(request):
     context={"user": user}
     return render(request, "accounts/profile.html", context)
 
-@login_required(login_url="login/")
-def preferences(request):
-    user = request.user
-    context={"user": user}
-    return render(request, "accounts/preferences.html", context)
 
 @login_required(login_url="login/")
 def update_profile(request):
-    if request.user.is_authenticated:
-        user = request.user
-        form = UpdateProfileForm(instance=user)
-        if request.method == "POST":
-            form = UpdateProfileForm(request.POST, request.FILES, instance=user)
-            if form.is_valid():
-                form.save()
-                messages.success(request, "¡Su perfil ha sido actualizado correctamente!")
-                return redirect("profile")
+    user = request.user
+    form = UpdateProfileForm(instance=user)
+    if request.method == "POST":
+        form = UpdateProfileForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "¡Su perfil ha sido actualizado correctamente!")
+            return redirect("profile")
     
     context = {"form":form}
     return render(request, "accounts/update_profile.html", context)
+

@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.urls import reverse
 from apps.data import read_data
+from apps.aulas.models import Aula
 from django.conf import settings
 from django.views.static import serve
 
@@ -17,6 +18,13 @@ def index(request):
 
     context['concentracion'] = read_data.concentracion_funcion()
     context['media'] = read_data.media_funcion()
+
+        # Obtén los grupos del usuario
+    user_groups = request.user.groups.all()
+
+    # Filtra las aulas según los grupos del usuario
+    aulas = Aula.objects.filter(grupo__in=user_groups).distinct()
+    context['aulas'] = aulas
 
     html_template = loader.get_template('home/index.html')
     return HttpResponse(html_template.render(context, request))
@@ -45,6 +53,11 @@ def pages(request):
         if load_template == 'admin':
             return HttpResponseRedirect(reverse('admin:index'))
         context['segment'] = load_template
+
+        # Añade la lógica para cargar las aulas en todas las páginas si es necesario
+        user_groups = request.user.groups.all()
+        aulas = Aula.objects.filter(grupos__in=user_groups).distinct()
+        context['aulas'] = aulas
 
         html_template = loader.get_template('home/' + load_template)
         return HttpResponse(html_template.render(context, request))
