@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 migrations/
+media/
 
 # tests and coverage
 *.pytest_cache
