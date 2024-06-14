@@ -115,7 +115,7 @@ def send_email_uvigo():
     # Establece una conexión segura con el servidor SMTP
     server.starttls()
     # Configura la autenticación SMTP
-    server.login('ldagostino@alumnos.uvigo.es', 'vincioS_9!')
+    server.login('ldagostino@alumnos.uvigo.es', 'radon&Data33')
 
     # Configura el correo electrónico
     from_email = 'ldagostino@alumnos.uvigo.es'
