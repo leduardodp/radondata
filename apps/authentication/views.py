@@ -8,8 +8,6 @@ from .decorators import unauthenticated_user
 from django.contrib.auth.models import Group
 
 
-
-
 # Create your views here.
 
 @unauthenticated_user
@@ -39,9 +37,6 @@ def register_user(request):
         if form.is_valid():
             user =form.save()
             username = form.cleaned_data.get("username")
-            
-            group = Group.objects.get(name='student')
-            user.groups.add(group)
 
             messages.success(request, "Usuario creado con éxito, {}\n¡Bienvenido!".format(username))
             return redirect("login/")

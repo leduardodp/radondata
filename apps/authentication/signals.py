@@ -1,7 +1,26 @@
 from django.db.models.signals import post_save
+from django.contrib.auth.models import Group
 from django.dispatch import receiver
 from .models import CustomUser
+from apps.aulas.models import Aula, Notificacion
 from PIL import Image
+
+@receiver(post_save, sender=CustomUser)
+def add_user_to_default_group(sender, instance, created, **kwargs):
+    if created:
+            #Asigna grupo default
+            group, created = Group.objects.get_or_create(name='student')
+            instance.groups.add(group)
+
+            # Asignar notificaciones para cada aula del grupo
+            aulas = Aula.objects.filter(grupo=group)
+            for aula in aulas:
+                Notificacion.objects.create(
+                    usuario=instance,
+                    aula=aula,
+                    preferencia=Notificacion.NINGUNA
+                )
+
 
 #Limitar tamaño foto
 @receiver(post_save, sender=CustomUser)

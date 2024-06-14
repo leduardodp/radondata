@@ -1,5 +1,6 @@
 # admin.py en la aplicación 'aulas'
 from django.contrib import admin
+from .forms import NotificacionAdminForm
 from .models import Aula, Notificacion
 from django.contrib.auth.models import Group
 
@@ -12,18 +13,11 @@ class AulaAdmin(admin.ModelAdmin):
 
 @admin.register(Notificacion)
 class NotificacionAdmin(admin.ModelAdmin):
+    form = NotificacionAdminForm
     list_display = ('usuario', 'aula', 'preferencia')
     list_filter = ('preferencia','aula',)
     search_fields = ('usuario__username', 'aula__nombre')
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-
-        if db_field.name == "aula" or db_field.name == "despacho":
-            # Get the groups of the logged-in user
-            user_groups = request.user.groups.all()
-            # Filter Aula objects based on the groups
-            kwargs["queryset"] = Aula.objects.filter(grupo__in=user_groups)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 #Para ver que aulas pertenecen a cada grupo
 class AulaInline(admin.TabularInline):
