@@ -5,7 +5,7 @@ from PIL import Image
 
 
 class CustomUser(AbstractUser):
-    phone = models.CharField(max_length=11, blank=True, null=True)
+    phone = models.CharField(max_length=11, blank=True, null=True, default='')
     profile_pic = models.ImageField(upload_to='users', blank=True, null=True)
 
     class Meta:
