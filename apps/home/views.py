@@ -54,10 +54,14 @@ def pages(request):
             return HttpResponseRedirect(reverse('admin:index'))
         context['segment'] = load_template
 
-        # Añade la lógica para cargar las aulas en todas las páginas si es necesario
+        '''# Añade la lógica para cargar las aulas en todas las páginas si es necesario
         user_groups = request.user.groups.all()
-        aulas = Aula.objects.filter(grupos__in=user_groups).distinct()
-        context['aulas'] = aulas
+        aulas = Aula.objects.filter(grupo__in=user_groups).distinct()
+        context['aulas'] = aulas'''
+
+        if load_template == 'dashboard':
+            html_template = loader.get_template('data/dashboard.html')
+            return HttpResponse(html_template.render(context, request))
 
         html_template = loader.get_template('home/' + load_template)
         return HttpResponse(html_template.render(context, request))
@@ -70,3 +74,4 @@ def pages(request):
     except:
         html_template = loader.get_template('home/page-500.html')
         return HttpResponse(html_template.render(context, request))
+    

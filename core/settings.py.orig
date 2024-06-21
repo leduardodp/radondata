@@ -157,7 +157,7 @@ DEFAULT_FROM_EMAIL = os.environ['DEFAULT_FROM_EMAIL']
 ## Celery Settings
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'  #La URL del broker de mensajería que se utilizará para enviar y recibir tareas
-accept_content = ['json'] #El tipo de contenido que se aceptará para las tareas
+CELERY_ACCEPT_CONTENT = ['json'] #El tipo de contenido que se aceptará para las tareas
 task_serializer = 'json' #El serializador que se utilizará para serializar las tareas
 result_serializer = 'json' #El serializador que se utilizará para serializar los resultados de las tareas
 timezone = 'Europe/Madrid' #La zona horaria que se utilizará para las tareas
@@ -165,6 +165,27 @@ result_backend = 'django-db'
 
 
 ## Celery Beat
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
 
 
+'''from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    'write-data-every-30-seconds': {
+        'task': 'data.tasks.write_data_24h_task',
+        'schedule': 10.0,
+    },
+    'read-data-every-30-seconds': {
+        'task': 'data.tasks.read_data_1m_task',
+        'schedule': 10.0,
+    },
+    'read-media-every-30-seconds': {
+        'task': 'data.tasks.read_media_1m_task',
+        'schedule': 10.0,
+    },
+}'''
+
+'''EMAIL_HOST = 'localhost'
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = ""
+EMAIL_PORT = 2525'''

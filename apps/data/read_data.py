@@ -48,15 +48,18 @@ def read_data_1m():
     print("Ejemplo de lectura de datos en InfluxDB")
     query_api = client.query_api()
     # Definir la consulta
-    query =  """from(bucket:"radon") |> range(start: -10m) |> filter(fn: (r) => r._measurement == "my_measurement")"""
+    query =  """from(bucket:"radon") |> range(start: -10m) |> filter(fn: (r) => r._measurement ==   "my_measurement")"""
     # Ejecutar la consulta
     results = query_api.query(org=client.org, query=query)
+    data = []
     
     for result in results:
         for record in result.records:
             concentracion = round(record.get_value(),2)
+            data.append({"_time": record.get_time(),"_value":concentracion})
             print("Aula:", record.values.get("Aula"),\
-                "Concentracion :",round(record.get_value(),2))
+                "Concentracion :",concentracion,"Bq/m3")
+    return data
             
 def concentracion_funcion():
     return concentracion
@@ -136,13 +139,11 @@ def send_email_uvigo():
     server.quit()
 
 
-
-
 def data_task():
     
-    schedule.every(30).seconds.do(write_data_24h)
-    schedule.every(30).seconds.do(read_data_1m) # Programar la tarea para que se ejecute cada 30 segundos
-    schedule.every(30).seconds.do(read_media_1m)
+    schedule.every(600).seconds.do(write_data_24h)
+    schedule.every(600).seconds.do(read_data_1m) # Programar la tarea para que se ejecute cada 30 segundos
+    schedule.every(600).seconds.do(read_media_1m)
 
     #schedule.every(30).seconds.do(send_email_uvigo)
     #schedule.every().day.at("16:38").do(send_email)
