@@ -19,17 +19,33 @@ app.config_from_object(settings, namespace='CELERY')
 # Celery Beat Settings
 app.conf.beat_schedule = {
     'send-mail-every-day-at-13':{
-        'task': 'apps.data.tasks.send_mail_func',
-        'schedule': crontab(hour=13, minute = 33), # cada día a las 13h
+        'task': 'apps.authentication.tasks.send_notifications',
+        'schedule': crontab(hour=19, minute = 5), # cada día a las 13h
+        'args': ('D',),
     },
-        'send-mail-every-week-at-10': {
-        'task': 'apps.data.tasks.send_mail_func',
-        'schedule': crontab(day_of_week='1', hour=10, minute=0),  # cada lunes a las 10h
+    'send-mail-every-week-at-10': {
+        'task': 'apps.authentication.tasks.send_notifications',
+        'schedule': crontab(day_of_week='6', hour=16, minute=0),  # cada lunes a las 10h
+        'args': ('S',),
     },
     'send-mail-every-month-at-15': {
-        'task': 'apps.data.tasks.send_mail_func',
+        'task': 'apps.authentication.tasks.send_notifications',
         'schedule': crontab(day_of_month='1', hour=15, minute=0),  # el primer día de cada mes a las 15h
+        'args': ('M',),
     },
+    'write-data-every-minute': {
+        'task': 'apps.home.tasks.write_data_every_minute',
+        'schedule': crontab(minute='*/1'),  # genera datos random cada minuto
+    },
+    'read-data-every-minute': {
+        'task': 'apps.home.tasks.read_data_every_minute',
+        'schedule': crontab(minute='*/1'),  # genera datos random cada minuto
+    },
+    'read-media-data-every-minute': {
+        'task': 'apps.home.tasks.read_media_data_every_minute',
+        'schedule': crontab(minute='*/1'),  # genera datos random cada minuto
+    },
+
 }
 
 # Cargar tareas de todos los módulos de aplicaciones registradas en Django.

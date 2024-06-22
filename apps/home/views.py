@@ -4,20 +4,18 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.urls import reverse
-from apps.data import read_data
 from apps.aulas.models import Aula
 from django.conf import settings
 from django.views.static import serve
+from . import tasks
 
-
-read_data.async_task()
 
 @login_required(login_url="/login/")
 def index(request):
     context = {'segment': 'index'}
 
-    context['concentracion'] = read_data.concentracion_funcion()
-    context['media'] = read_data.media_funcion()
+    context['concentracion'] = tasks.concentracion_funcion()
+    context['media'] = tasks.media_funcion()
 
         # Obtén los grupos del usuario
     user_groups = request.user.groups.all()

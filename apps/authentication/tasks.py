@@ -1,7 +1,10 @@
 # myapp/tasks.py
 from celery import shared_task
-import sqlite3
+#import sqlite3
 from django.core.mail import send_mail
+from apps.aulas.models import Notificacion
+from apps.home.tasks import media_funcion
+
 #from .read_data import get_users ,media_funcion
 
 #Tarea de prueba
@@ -13,7 +16,7 @@ def test_func(self):
 
 
 #Tarea para enviar emails
-def get_users():
+'''def get_users():
     # Conecta a la base de datos SQLite
     conn = sqlite3.connect('db.sqlite3')
 
@@ -26,9 +29,9 @@ def get_users():
     conn.close()
 
     # Devuelve la lista de usuarios
-    return [user[0] for user in users]
+    return [user[0] for user in users]'''
 
-@shared_task(bind=True)
+'''@shared_task(bind=True)
 def send_mail_func(self):
     users = get_users()
     for user in users:
@@ -36,7 +39,33 @@ def send_mail_func(self):
         message = f'Aquí están los datos de concentracion media en los ultimos 10 min: \n\n Bq/m3'
         email_from = 'ldagostino@alumnos.uvigo.es'
         send_mail(subject, message, email_from, [user])
-    return "Sent"
+    return "Sent"'''
+
+
+@shared_task(bind=True)
+def send_notifications(self,frequency):
+
+    if frequency == 'D':
+        label = 'diaria'
+    elif frequency == 'S':
+        label = 'semanal'
+    elif frequency == 'M':
+        label = 'mensual'
+    else:
+        return
+    
+    media = media_funcion()
+
+    notificaciones = Notificacion.objects.filter(preferencia=frequency)
+    for notificacion in notificaciones:
+        user = notificacion.usuario
+        aula = notificacion.aula
+        subject = f'Concentración media de radón {label}'
+        message = f'Aquí están los datos de concentracion media en los ultimos 10 min:   \n\n {media} Bq/m3'
+        email_from = 'ldagostino@alumnos.uvigo.es'
+        send_mail(subject, message, email_from, [user.email])
+
+
 
 
 

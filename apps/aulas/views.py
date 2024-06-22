@@ -1,8 +1,9 @@
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
-from apps.aulas.models import Aula, Notificacion
+from .models import Aula, Notificacion
 from .forms import PreferenciaNotificacionesForm
+
 
 # Create your views here.
 @login_required(login_url="login/")
@@ -17,6 +18,7 @@ def preferences(request):
                 notificacion, created = Notificacion.objects.get_or_create(usuario=request.user, aula=aula)
                 notificacion.preferencia = preferencia
                 notificacion.save()
+
             messages.success(request, "¡Preferencias actualizadas correctamente!")    
             return redirect('preferences')
     else:

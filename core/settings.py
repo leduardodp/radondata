@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'apps.home', # Enable the inner home (home)
     'apps.authentication',
     'apps.aulas',
-    'apps.data',
     'django_cleanup.apps.CleanupConfig', #Actualizar foto perfil ( borra la anterior)
     'django_celery_results',  #Log de tareas desde admin Django
     'django_celery_beat',  #Tareas programadas
