@@ -39,11 +39,11 @@ app.conf.beat_schedule = {
     },
     'read-data-every-minute': {
         'task': 'apps.home.tasks.read_data_every_minute',
-        'schedule': crontab(minute='*/1'),  # genera datos random cada minuto
+        'schedule': crontab(minute='*/1'),  # lee datos random cada minuto
     },
     'read-media-data-every-minute': {
         'task': 'apps.home.tasks.read_media_data_every_minute',
-        'schedule': crontab(minute='*/1'),  # genera datos random cada minuto
+        'schedule': crontab(minute='*/1'),  # lee la media de datos random cada minuto
     },
 
 }

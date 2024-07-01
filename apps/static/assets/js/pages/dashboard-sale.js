@@ -112,7 +112,7 @@ function floatchart() {
                 stacked: false,
             },
             stroke: {
-                width: [0, 3],
+                width: [0, 30],
                 curve: 'smooth'
             },
             plotOptions: {
@@ -120,11 +120,11 @@ function floatchart() {
                     columnWidth: '50%'
                 }
             },
-            colors: ['#7267EF', '#c7d9ff'],
+            colors: ['#7267EF', '#c7d9fe'],
             series: [{
-                name: 'Total Sales',
+                name: 'Ventas totales',
                 type: 'column',
-                data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30]
+                data: [15, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30]
             }, {
                 name: 'Average',
                 type: 'line',

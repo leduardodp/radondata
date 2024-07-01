@@ -3,7 +3,57 @@
 {% block title %} Dashboard {% endblock %} 
 
 <!-- Specific CSS goes HERE -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+<link href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" rel="stylesheet">
+<style>
+.daterangepicker .calendar-table td.in-range {
+    background-color: #dedbf6 ;
+}
+
+.daterangepicker .calendar-table td.start-date, .daterangepicker .calendar-table td.end-date {
+    background-color: #7267EF;
+    color: #fff;
+}
+
+.daterangepicker .ranges li {
+    font-family: "Inter", sans-serif;
+    border: none;
+    padding: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top :10px;
+    font-size: 13px;
+    font-weight: 400;
+    color: #333;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: color 0.3s, 
+}
+
+.daterangepicker .ranges li:hover {
+    background-color: #7267EF;
+    color: #fff;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.3s;
+    }
+
+.daterangepicker .ranges li.active {
+    background-color: #7267EF;
+    color: #fff;
+
+}
+.daterangepicker .range_inputs .cancelBtn {
+    background-color: #28a745;
+    color: white;
+    border:#7267EF;
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 4px;
+}
+</style>
+{% endblock stylesheets %}
 
 {% block content %}
 
@@ -28,57 +78,34 @@
             </div>
             <!-- [ breadcrumb ] end -->
             <!-- [ Main Content ] start -->
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                <h1>Aula 0</h1>
-                            <div class="card-body pb-0">
-                                <h3 class="text-dark mb-1">{{ concentracion }}</h3>
-                                <span class="text-primary">Concentración de radón (Bq/m3)</span>
-                                <h4 class="mb-4 mt-3"></h4>
-                            </div>
-                                <div id="support-chart"></div>
-                                <div class="card-footer border-0 bg-primary text-white background-pattern-white">
-                                    <div class="row text-center">
-                                        <div class="col">
-                                            <h4 class="m-0 text-white">{{ media }}</h4>
-                                            <span>Media diaria</span>
-                                        </div>
-                                        <div class="col">
-                                            <h4 class="m-0 text-white">15</h4>
-                                            <span>Media semanal</span>
-                                        </div>
-                                        <div class="col">
-                                            <h4 class="m-0 text-white">13</h4>
-                                            <span>Media mensual</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                </div>
-                </div>
-                <div class="col-xl-6 col-md-10">
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>Aula 0</h2>
+            {% for aula in aulas %}
+            <div id="chart"></div>     
+            <div class="container-fluid">
+                <div class="card mt-5">
+                    <div class="card-header">
+                        <h2>{{ aula.nombre }}</h2>
+                        <div id="reportrange" class="form-control" >
+                            <i class="feather icon-calendar"></i>&nbsp;
+                            <span></span> <i class="feather icon-chevron-down"></i>
                         </div>
-                        <div class="card-body">
+                    </div>
+                    <div class="card-body">
+                        <div id="account-chart" class="chart">
                             <div class="row pb-2">
                                 <div class="col-auto m-b-10">
                                     <h3 class="mb-1">{{ concentracion }}</h3>
-                                    <span>Concentración actual</span>
+                                    <span>Última concentración</span>
                                 </div>
                                 <div class="col-auto m-b-10">
                                     <h3 class="mb-1">{{ media }}</h3>
                                     <span>Media</span>
                                 </div>
                             </div>
-                            <div id="account-chart"></div>
                         </div>
                     </div>
                 </div>
             </div>
+            {% endfor %}
             <!-- [ Main Content ] end -->
         </div>
     </div>
@@ -89,7 +116,119 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 
-    <script src="/static/assets/js/plugins/apexcharts.min.js"></script>
-    <script src="/static/assets/js/pages/dashboard-sale.js"></script>
+<!-- jQuery -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<!-- Moment.js -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<!-- Date Range Picker JS -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<!-- ApexCharts -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const data = JSON.parse('{{ chart_data|escapejs }}');
+        const media = parseFloat('{{ media_data }}');
+
+        const options = {
+            chart:{
+                type: 'bar',
+                height: 350,
+                weight: 1000,
+            },
+            
+            series:[{
+                name: 'Concentración (Bq/m³)',
+                data: data.map(item => ({ x: new Date(item.x).getTime() - (new Date().getTimezoneOffset() * 60000), y: item.y }))
+            }],
+            xaxis:{
+                type: 'datetime',
+                labels: {
+                    format: 'HH:mm'
+                },
+            },
+            yaxis: {
+                title: {
+                    text: 'Bq/m³',
+                },
+                labels: {
+                    formatter: function (value) {
+                        return Math.round(value);
+                        }
+                    }
+            },
+            colors: ["#7267EF"],
+            dataLabels: {
+                enabled: false
+            },
+            tooltip:{
+                x:{
+                    format: 'dd MMM yyyy HH:mm:ss'
+                }
+            },
+            legend:{
+                position: 'bottom',
+                horizonalAlign:'center',
+            },
+            annotations: {
+                yaxis: [{
+                    y: media,
+                    borderColor: '#FF9033',
+                    label: {
+                        borderColor: '#7267EF',
+                        style: {
+                            color: '#F6FAF8 ',
+                            background: '#FF9033',
+                        },
+                        text: `Media: ${media} Bq/m³`,
+                    }
+                }]
+            }
+        }
+        const chart = new ApexCharts(document.querySelector("#account-chart"), options);
+        chart.render();
+
+        function cb(start, end) {
+            $('#reportrange span').html(start.format('MMMM D, YYYY HH:mm') + ' - ' + end.format('MMMM D, YYYY HH:mm'));
+            // Update the chart data based on selected date range
+            updateChart(start, end);
+        }
+
+        $('#reportrange').daterangepicker({
+            timePicker: true,
+            timePicker24Hour: true,
+            startDate: moment().subtract(29, 'days'),
+            endDate: moment(),
+            ranges: {
+                'Hoy': [moment().startOf('days'), moment()],
+                'Ayer': [moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')],
+                'Últimas 24h': [moment().subtract(1, 'days'), moment()],
+                'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+                'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+                'Este mes': [moment().startOf('month'), moment().endOf('month')],
+                'Mes anterior': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+            locale:{
+                format: 'MMMM D, YYYY HH:mm',
+            },
+
+        }, cb);
+
+        cb(moment().subtract(29, 'days'), moment());
+
+        function updateChart(start,end) {
+            // Filtrar los datos según el rango de fechas seleccionado
+            const filteredData = data.filter(item => {
+                const date = new Date(item.x);
+                return date >= start && date <= end;
+            });
+            // Actualizar los datos del gráfico
+            chart.updateSeries([{
+                name: 'Concentración (Bq/m3)',
+                data: filteredData.map(item => ({ x: new Date(item.x).getTime() - (new Date().getTimezoneOffset() * 60000), y: item.y }))
+            }]);
+        }
+
+    });
+</script>
 
 {% endblock javascripts %}

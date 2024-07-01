@@ -9,84 +9,52 @@
 
 
     <!-- [ Main Content ] start -->
-    <div class="pc-container">
-        <div class="pcoded-content">
-            <!-- [ breadcrumb ] start -->
-            <div class="page-header">
-                <div class="page-block">
-                    <div class="row align-items-center">
-                        <div class="col-md-6">
-                            <div class="page-header-title">
-                                <h5 class="m-b-10">Dashboard </h5>
-                            </div>
-                            <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                                <li class="breadcrumb-item">Radon data</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- [ breadcrumb ] end -->
-            <head>
-                <meta charset="utf-8">
-                <title>InfluxDB iFrame</title>
-                <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
-                <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-                <script crossorigin src="https://unpkg.com/@influxdata/giraffe"></script>
-                <style>
-                    .iframe-container {
-                        width: 100%;
-                        height: 90vh;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        background-color: #072b50;
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>ApexCharts con JSON generado por Celery Beat</title>
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    </head>
+    <body>
+        <div id="chart"></div>
+        <script>
+            // Función para obtener los datos del JSON generado por Celery Beat
+            function getData() {
+                $.ajax({
+                    type: 'GET',
+                    url: '/get_data/', // URL que devuelve el JSON generado por Celery Beat
+                    dataType: 'json',
+                    success: function(data) {
+                        // Renderizar la gráfica con los datos obtenidos
+                        renderChart(data);
                     }
-                    iframe {
-                        width: 70%;
-                        height: 80%;
-                        border: 1px solid #ccc;
-                        border-radius: 5px;
-                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                });
+            }
+    
+            // Función para renderizar la gráfica con ApexCharts
+            function renderChart(data) {
+                var options = {
+                    chart: {
+                        type: 'line'
+                    },
+                    series: [{
+                        name: 'Datos',
+                        data: data
+                    }],
+                    xaxis: {
+                        type: 'datetime'
                     }
-                </style>
-            </head>
-            <body id="home">
-                <div class="iframe-container">
-                    <iframe src="http://localhost:8086/orgs/006adb5bb7c4d029/dashboards/0d358ec8c0add000?lower=now%28%29+-+5m" frameborder="0" allowfullscreen></iframe>
-                </div>
-            </body>
-            <head>
-                <title>InfluxDB Data Visualization</title>
-                <script src="https://cdn.jsdelivr.net/npm/@influxdata/giraffe@2.11.0/dist/giraffe.umd.min.js"></script>
-            </head>
-            <body>
-                <div id="chart" style="width: 100%; height: 500px;"></div>
-                <script>
-                    const data = JSON.parse(document.getElementById('data-json').textContent);
-                    const giraffe = window.giraffe;
-            
-                    const config = {
-                        table: giraffe.newTable({
-                            columnKeys: ['_time', '_value'],
-                            columns: {
-                                _time: data.map(d => new Date(d.time)),
-                                _value: data.map(d => d.value),
-                            }
-                        }),
-                        layers: [{
-                            type: 'line',
-                            x: '_time',
-                            y: '_value'
-                        }],
-                    };
-            
-                    const plot = giraffe.plot(document.getElementById('chart'), config);
-                </script>
-                <script type="application/json" id="data-json">{{ data|safe }}</script>
-            </body>
+                };
+    
+                var chart = new ApexCharts(document.getElementById('chart'), options);
+                chart.render();
+            }
+    
+            // Llamar a la función para obtener los datos y renderizar la gráfica
+            getData();
+        </script>
+    </body>
+    </html>
             
 {% endblock content %}
 

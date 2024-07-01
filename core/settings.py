@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_cleanup.apps.CleanupConfig', #Actualizar foto perfil ( borra la anterior)
     'django_celery_results',  #Log de tareas desde admin Django
     'django_celery_beat',  #Tareas programadas
+    'django_extensions',  #Comandos de Django
 ]
 
 MIDDLEWARE = [

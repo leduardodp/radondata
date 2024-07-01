@@ -1,23 +1,36 @@
 import os
 from django import template
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect 
 from django.template import loader
 from django.urls import reverse
 from apps.aulas.models import Aula
 from django.conf import settings
 from django.views.static import serve
 from . import tasks
+import json
+
 
 
 @login_required(login_url="/login/")
 def index(request):
     context = {'segment': 'index'}
 
+    # Ejecutar la tarea para obtener los datos de la gráfica
+    chart_data_json = tasks.read_data_every_minute.delay().get()
+    chart_data = json.loads(chart_data_json)
+    context['chart_data'] = json.dumps(chart_data)
+
+    media_data = tasks.read_media_data_every_minute.delay().get()
+    context['media_data'] = media_data
+    # Obtiene los datos de las tareas
+    
     context['concentracion'] = tasks.concentracion_funcion()
     context['media'] = tasks.media_funcion()
 
-        # Obtén los grupos del usuario
+
+
+    # Obtén los grupos del usuario
     user_groups = request.user.groups.all()
 
     # Filtra las aulas según los grupos del usuario
@@ -72,4 +85,4 @@ def pages(request):
     except:
         html_template = loader.get_template('home/page-500.html')
         return HttpResponse(html_template.render(context, request))
-    
+

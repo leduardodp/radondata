@@ -67,7 +67,23 @@ def send_notifications(self,frequency):
 
 
 
-
+'''users = user.objects.all()
+    for user in users:
+        notificaciones = Notificacion.objects.filter(usuario=user, preferencia=frequency)
+        if notificaciones.exists():
+            message = f'Aquí están los datos de concentracion media para cada aula:\n\n'
+            for notificacion in notificaciones:
+                aula = notificacion.aula
+                media_diaria = media_diaria_funcion(aula)
+                media_semanal = media_semanal_funcion(aula)
+                media_mensual = media_mensual_funcion(aula)
+                message += f'Aula {aula.nombre}:\n'
+                message += f'- Diaria: {media_diaria} Bq/m3\n'
+                message += f'- Semanal: {media_semanal} Bq/m3\n'
+                message += f'- Mensual: {media_mensual} Bq/m3\n\n'
+            subject = f'Concentración media de radón {label}'
+            email_from = 'ldagostino@alumnos.uvigo.es'
+            send_mail(subject, message, email_from, [user.email])'''
 
 
 
