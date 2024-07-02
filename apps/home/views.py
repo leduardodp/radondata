@@ -17,16 +17,16 @@ def index(request):
     context = {'segment': 'index'}
 
     # Ejecutar la tarea para obtener los datos de la gráfica
-    chart_data_json = tasks.read_data_every_minute.delay().get()
+    chart_data_json = tasks.read_daily_data.delay().get()
     chart_data = json.loads(chart_data_json)
     context['chart_data'] = json.dumps(chart_data)
 
-    media_data = tasks.read_media_data_every_minute.delay().get()
+    media_data = tasks.read_daily_media_data.delay().get()
     context['media_data'] = media_data
+
     # Obtiene los datos de las tareas
-    
     context['concentracion'] = tasks.concentracion_funcion()
-    context['media'] = tasks.media_funcion()
+    context['media'] = tasks.media_diaria_funcion()
 
 
 
@@ -36,6 +36,12 @@ def index(request):
     # Filtra las aulas según los grupos del usuario
     aulas = Aula.objects.filter(grupo__in=user_groups).distinct()
     context['aulas'] = aulas
+    for aula in aulas:
+        # Calcula la concentración y media para cada aula
+        concentracion = tasks.concentracion_funcion()
+        media = tasks.media_diaria_funcion()
+        aula.concentracion = concentracion
+        aula.media = media
 
     html_template = loader.get_template('home/index.html')
     return HttpResponse(html_template.render(context, request))

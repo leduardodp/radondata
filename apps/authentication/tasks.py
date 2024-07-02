@@ -3,17 +3,8 @@ from celery import shared_task
 #import sqlite3
 from django.core.mail import send_mail
 from apps.aulas.models import Notificacion
-from apps.home.tasks import media_funcion
-
-#from .read_data import get_users ,media_funcion
-
-#Tarea de prueba
-@shared_task(bind=True)
-def test_func(self):
-    for i in range(10):
-        print(i)
-    return "Done"
-
+from apps.home.tasks import media_diaria_funcion , media_semanal_funcion , media_mensual_funcion
+from apps.authentication.models import CustomUser
 
 #Tarea para enviar emails
 '''def get_users():
@@ -47,14 +38,17 @@ def send_notifications(self,frequency):
 
     if frequency == 'D':
         label = 'diaria'
+        
     elif frequency == 'S':
         label = 'semanal'
+        
     elif frequency == 'M':
         label = 'mensual'
+        
     else:
         return
     
-    media = media_funcion()
+    media = media_diaria_funcion()
 
     notificaciones = Notificacion.objects.filter(preferencia=frequency)
     for notificacion in notificaciones:
@@ -84,6 +78,38 @@ def send_notifications(self,frequency):
             subject = f'Concentración media de radón {label}'
             email_from = 'ldagostino@alumnos.uvigo.es'
             send_mail(subject, message, email_from, [user.email])'''
+
+'''@shared_task(bind=True)
+def send_notifications(self,frequency):
+
+    if frequency == 'D':
+        label = 'diaria'
+        media_func = media_diaria_funcion()
+    elif frequency == 'S':
+        label = 'semanal'
+        media_func = media_semanal_funcion()
+    elif frequency == 'M':
+        label = 'mensual'
+        media_func = media_mensual_funcion()
+    else:
+        return
+    
+    users = CustomUser.objects.all()
+    for user in users:
+        notificaciones = Notificacion.objects.filter(preferencia=frequency,usuario=user)
+        #notificaciones_usuario = notificaciones.filter()
+        aulas = [notificacion.aula for notificacion in notificaciones]
+        medias = {}
+        for aula in aulas:
+            media = media_func(aula)
+            medias[aula.nombre] = media
+        
+        subject = f'Concentración media de radón {label}'
+        message = 'Estas son las medias de concentración de radón {}:\n\n'.format(label)
+        for aula, media in medias.items():
+            message += f'{aula}: {media} Bq/m3\n'
+        email_from = 'ldagostino@alumnos.uvigo.es'
+        send_mail(subject, message, email_from, [user.email])'''
 
 
 

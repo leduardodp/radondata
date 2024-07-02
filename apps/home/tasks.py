@@ -4,6 +4,8 @@ import pytz
 import random , redis , json
 from django.core.mail import send_mail
 from celery import shared_task
+from apps.aulas.models import Aula
+
 
 concentracion = 0.0
 media = 0.0
@@ -26,15 +28,17 @@ def write_data_every_minute(self):
     #Escribir datos en influx
     print("Ejemplo de escritura de datos en InfluxDB")
     data = []
-    for aula in range(1): 
-        p = Point("my_measurement").tag("Aula", str(aula)).field("concentracion", random.uniform(0, 300))
+    aulas = Aula.objects.all()
+    for aula in aulas: 
+        p = Point("my_measurement").tag("name",str(aula)).field("concentracion", random.uniform(0, 300))
         data.append(p)
-        write_api.write(bucket=bucket, org=client.org, record=p)
+    
+    write_api.write(bucket=bucket, org=client.org, record=p)
 
-r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+
 
 @shared_task(bind=True)
-def read_data_every_minute(self):
+def read_daily_data(self):
     global concentracion
 
     #Leer datos de influx
@@ -42,7 +46,9 @@ def read_data_every_minute(self):
     query_api = client.query_api()
 
     # Definir la consulta
-    query =  """from(bucket:"radon") |> range(start: -2h) |> filter(fn: (r) => r._measurement ==   "my_measurement")"""
+    query =  """from(bucket:"radon")    
+                |> range(start: -24h) 
+                |> filter(fn: (r) => r._measurement ==   "my_measurement")"""
     # Ejecutar la consulta
     results = query_api.query(org=client.org, query=query)
 
@@ -69,11 +75,14 @@ def read_data_every_minute(self):
     
 #Media Diaria
 @shared_task(bind=True)
-def read_media_data_every_minute(self):
+def read_daily_media_data(self):
     global media
     query_api = client.query_api()
     # Definir la consulta
-    query =  """ from(bucket:"radon") |> range(start: -1d) |> filter(fn: (r) => r._measurement == "my_measurement") |> mean() """
+    query =  """ from(bucket:"radon")   
+                |> range(start: -1d) 
+                |> filter(fn: (r) => r._measurement == "my_measurement") 
+                |> mean() """
     # Ejecutar la consulta
     results = query_api.query(org=client.org, query=query)
     for result in results:
@@ -81,16 +90,19 @@ def read_media_data_every_minute(self):
             media = round(record.get_value(),2)
             print("Aula:", record.values.get("Aula"), \
                 "Concentracion media: ", media)
-            redis_client.set('media', media)
+            redis_client.set('daily_media', media)
             return media
         
-#Media Semanal
+#Media semanal
 @shared_task(bind=True)
-def read_media_data_every_minute(self):
+def read_weekly_media_data(self):
     global media
     query_api = client.query_api()
     # Definir la consulta
-    query =  """ from(bucket:"radon") |> range(start: -7d) |> filter(fn: (r) => r._measurement == "my_measurement") |> mean() """
+    query =  """ from(bucket:"radon")   
+                |> range(start: -7d) 
+                |> filter(fn: (r) => r._measurement == "my_measurement") 
+                |> mean() """
     # Ejecutar la consulta
     results = query_api.query(org=client.org, query=query)
     for result in results:
@@ -98,16 +110,19 @@ def read_media_data_every_minute(self):
             media = round(record.get_value(),2)
             print("Aula:", record.values.get("Aula"), \
                 "Concentracion media: ", media)
-            redis_client.set('media', media)
+            redis_client.set('weekly_media', media)
             return media
 
-#Media Mensual
+#Media mensual
 @shared_task(bind=True)
-def read_media_data_every_minute(self):
+def read_monthly_media_data(self):
     global media
     query_api = client.query_api()
     # Definir la consulta
-    query =  """ from(bucket:"radon") |> range(start:-30d) |> filter(fn: (r) => r._measurement == "my_measurement") |> mean() """
+    query =  """ from(bucket:"radon")   
+                |> range(start: date_trunc(t: now(), unit: 1mo)) 
+                |> filter(fn: (r) => r._measurement == "my_measurement") 
+                |> mean() """
     # Ejecutar la consulta
     results = query_api.query(org=client.org, query=query)
     for result in results:
@@ -115,11 +130,15 @@ def read_media_data_every_minute(self):
             media = round(record.get_value(),2)
             print("Aula:", record.values.get("Aula"), \
                 "Concentracion media: ", media)
-            redis_client.set('media', media)
+            redis_client.set('monthly_media', media)
             return media
 
-def media_funcion():
-    return float(redis_client.get('media').decode('utf-8')) if redis_client.get('media') else 0.0
+def media_diaria_funcion():
+    return float(redis_client.get('daily_media').decode('utf-8')) if redis_client.get('daily_media') else 0.0
+def media_semanal_funcion():
+    return float(redis_client.get('weekly_media').decode('utf-8')) if redis_client.get('weekly_media') else 0.0
+def media_mensual_funcion():
+    return float(redis_client.get('monthly_media').decode('utf-8')) if redis_client.get('monthly_media') else 0.0
 
 def concentracion_funcion():
     return float(redis_client.get('concentracion').decode('utf-8')) if redis_client.get('concentracion') else 0.0

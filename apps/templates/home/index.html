@@ -93,11 +93,11 @@
                         <div id="account-chart" class="chart">
                             <div class="row pb-2">
                                 <div class="col-auto m-b-10">
-                                    <h3 class="mb-1">{{ concentracion }}</h3>
+                                    <h3 class="mb-1">{{ aula.concentracion }}</h3>
                                     <span>Última concentración</span>
                                 </div>
                                 <div class="col-auto m-b-10">
-                                    <h3 class="mb-1">{{ media }}</h3>
+                                    <h3 class="mb-1">{{ aula.media }}</h3>
                                     <span>Media</span>
                                 </div>
                             </div>
@@ -150,11 +150,7 @@
                 title: {
                     text: 'Bq/m³',
                 },
-                labels: {
-                    formatter: function (value) {
-                        return Math.round(value);
-                        }
-                    }
+
             },
             colors: ["#7267EF"],
             dataLabels: {
