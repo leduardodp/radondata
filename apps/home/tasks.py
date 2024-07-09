@@ -27,13 +27,11 @@ def write_data_every_minute(self):
     write_api = client.write_api(write_options=SYNCHRONOUS)
     #Escribir datos en influx
     print("Ejemplo de escritura de datos en InfluxDB")
-    data = []
     aulas = Aula.objects.all()
     for aula in aulas: 
         p = Point("my_measurement").tag("name",str(aula)).field("concentracion", random.uniform(0, 300))
-        data.append(p)
+        write_api.write(bucket=bucket, org=client.org, record=p)
     
-    write_api.write(bucket=bucket, org=client.org, record=p)
 
 
 
@@ -53,92 +51,110 @@ def read_daily_data(self):
     results = query_api.query(org=client.org, query=query)
 
     #Crear una lista para almacenar los datos
-    data = []
+    #data = []
+    #Crear un diccionario para almacenar los datos por aula
     for result in results:
+        aula_data =[]
         for record in result.records:
+            name = record.values.get("name")
             concentracion = round(record.get_value(),2)
-            #Añadir los datos a la lista
-
             # Convertir el timestamp a hora local
             timestamp_utc = record.get_time()
             timezone_local = pytz.timezone('Europe/Madrid')  # Ajusta a tu zona horaria local
             timestamp_local = timestamp_utc.astimezone(timezone_local).isoformat()
-            data.append({
+
+            # Agregar los datos a la lista correspondiente a la aula
+            aula_data.append({
                 "x": timestamp_local, 
-                "y":concentracion
+                "y": concentracion
                 })
-            #Imprimir los datos
-            print("Aula:", record.values.get("Aula"),\
-                "Concentracion :",concentracion,"Bq/m3")
-    #Devolver los datos en formato JSON
-    return json.dumps(data)
+        
+        redis_client.set(f'daily_data_{name}', json.dumps(aula_data))
     
 #Media Diaria
 @shared_task(bind=True)
 def read_daily_media_data(self):
-    global media
     query_api = client.query_api()
     # Definir la consulta
-    query =  """ from(bucket:"radon")   
-                |> range(start: -1d) 
-                |> filter(fn: (r) => r._measurement == "my_measurement") 
-                |> mean() """
+    query =  """ 
+        import "date"
+        start_day = date.truncate(t: now(), unit: 1d)
+        from(bucket:"radon")   
+            |> range(start: start_day, stop: now()) 
+            |> filter(fn: (r) => r._measurement == "my_measurement") 
+            |> mean() 
+            """
     # Ejecutar la consulta
     results = query_api.query(org=client.org, query=query)
     for result in results:
         for record in result.records:
+            name = record.values.get("name")
             media = round(record.get_value(),2)
-            print("Aula:", record.values.get("Aula"), \
-                "Concentracion media: ", media)
-            redis_client.set('daily_media', media)
-            return media
-        
+            print(f"Media diaria de {name}: {media}")
+            redis_client.set(f'daily_media_{name}', media)
+
 #Media semanal
 @shared_task(bind=True)
 def read_weekly_media_data(self):
-    global media
     query_api = client.query_api()
     # Definir la consulta
-    query =  """ from(bucket:"radon")   
-                |> range(start: -7d) 
-                |> filter(fn: (r) => r._measurement == "my_measurement") 
-                |> mean() """
+    query =  """
+        import "date"
+        start_week = date.truncate(t: now(), unit: 1w)
+        from(bucket: "radon")
+            |> range(start: start_week, stop: now())
+            |> filter(fn: (r) => r._measurement == "my_measurement")
+            |> mean()
+            """
+
     # Ejecutar la consulta
     results = query_api.query(org=client.org, query=query)
     for result in results:
-        for record in result.records:
+        for record in result.records: 
+            name = record.values.get("name")
             media = round(record.get_value(),2)
-            print("Aula:", record.values.get("Aula"), \
-                "Concentracion media: ", media)
-            redis_client.set('weekly_media', media)
-            return media
+            print(f"Media semanal de {name}: {media}")
+            redis_client.set(f'weekly_media_{name}', media)
 
 #Media mensual
 @shared_task(bind=True)
 def read_monthly_media_data(self):
-    global media
     query_api = client.query_api()
     # Definir la consulta
-    query =  """ from(bucket:"radon")   
-                |> range(start: date_trunc(t: now(), unit: 1mo)) 
-                |> filter(fn: (r) => r._measurement == "my_measurement") 
-                |> mean() """
+    query =  """ 
+        import "date"
+        start_month = date.truncate(t: now(), unit: 1mo)
+        from(bucket: "radon")
+            |> range(start: start_month, stop: now())
+            |> filter(fn: (r) => r._measurement == "my_measurement")
+            |> mean()
+            """
+
     # Ejecutar la consulta
     results = query_api.query(org=client.org, query=query)
     for result in results:
         for record in result.records:
+            name = record.values.get("name")
             media = round(record.get_value(),2)
-            print("Aula:", record.values.get("Aula"), \
-                "Concentracion media: ", media)
-            redis_client.set('monthly_media', media)
-            return media
+            print(f"Media mensual de {name}: {media}")
+            redis_client.set(f'monthly_media_{name}', media)
 
-def media_diaria_funcion():
-    return float(redis_client.get('daily_media').decode('utf-8')) if redis_client.get('daily_media') else 0.0
-def media_semanal_funcion():
-    return float(redis_client.get('weekly_media').decode('utf-8')) if redis_client.get('weekly_media') else 0.0
-def media_mensual_funcion():
-    return float(redis_client.get('monthly_media').decode('utf-8')) if redis_client.get('monthly_media') else 0.0
+def get_media_diaria(name):
+    media = redis_client.get(f'daily_media_{name}')
+    return float(media.decode('utf-8')) if media else 0.0
+
+def get_media_semanal(name):
+    media = redis_client.get(f'weekly_media_{name}')
+    return float(media.decode('utf-8')) if media else 0.0
+
+def get_media_mensual(name):
+    media = redis_client.get(f'monthly_media_{name}')
+    return float(media.decode('utf-8')) if media else 0.0
+
+def get_json(name):
+    datos = redis_client.get(f'daily_data_{name}')
+    return json.loads(datos.decode('utf-8')) if datos else []
+
 
 def concentracion_funcion():
     return float(redis_client.get('concentracion').decode('utf-8')) if redis_client.get('concentracion') else 0.0

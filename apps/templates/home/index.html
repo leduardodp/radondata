@@ -52,6 +52,9 @@
     margin: 5px;
     border-radius: 4px;
 }
+.daterange-picker:hover {
+    cursor: pointer;
+}
 </style>
 {% endblock stylesheets %}
 
@@ -69,8 +72,7 @@
                                 <h5 class="m-b-10">Dashboard </h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                                <li class="breadcrumb-item">Radon data</li>
+                                <li class="breadcrumb-item">Home</li>
                             </ul>
                         </div>
                     </div>
@@ -78,29 +80,38 @@
             </div>
             <!-- [ breadcrumb ] end -->
             <!-- [ Main Content ] start -->
-            {% for aula in aulas %}
-            <div id="chart"></div>     
+            {% for aula in aulas_info %}   
             <div class="container-fluid">
                 <div class="card mt-5">
-                    <div class="card-header">
-                        <h2>{{ aula.nombre }}</h2>
-                        <div id="reportrange" class="form-control" >
+                    <div class="card-header bg-light" >
+                        <h1 class="mb-3">{{ aula.nombre }}</h1>
+                        <div id="account-chart" class="chart">
+                            <div class="row pb-2">
+                                <div class="col-auto m-b-10">
+                                    <h3 class="mb-1 text-center">{{ aula.media_diaria }}</h3>
+                                    <span>Concentración media diaria</span>
+                                </div>
+                                <div class="col-auto m-b-10">
+                                    <h3 class="mb-1 text-center">{{ aula.media_semanal }}</h3>
+                                    <span>Concentración media semanal</span>
+                                </div>
+                                <div class="col-auto m-b-10">
+                                    <h3 class="mb-1 text-center">{{ aula.media_mensual }}</h3>
+                                    <span>Concentración media mensual</span>
+                                </div>
+                                <div class="col-auto m-b-10 d-flex align-items-center" style="margin-left: 50px;">
+                                    <h4 class="font-weight:bold;">en Bq/m³</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="reportrange{{ forloop.counter }}" class="form-control daterange-picker" >
                             <i class="feather icon-calendar"></i>&nbsp;
                             <span></span> <i class="feather icon-chevron-down"></i>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <div id="account-chart" class="chart">
-                            <div class="row pb-2">
-                                <div class="col-auto m-b-10">
-                                    <h3 class="mb-1">{{ aula.concentracion }}</h3>
-                                    <span>Última concentración</span>
-                                </div>
-                                <div class="col-auto m-b-10">
-                                    <h3 class="mb-1">{{ aula.media }}</h3>
-                                    <span>Media</span>
-                                </div>
-                            </div>
+                    <div class="card-body ">
+                        <div id="account-chart-dash{{ forloop.counter }}" class="chart">
+
                         </div>
                     </div>
                 </div>
@@ -126,10 +137,12 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const data = JSON.parse('{{ chart_data|escapejs }}');
-        const media = parseFloat('{{ media_data }}');
+        {% for aula in aulas_info %}
+        const data{{ forloop.counter }} = JSON.parse('{{ aula.json|escapejs }}');
+        const media{{ forloop.counter }} = parseFloat('{{ aula.media_diaria }}');
+        
 
-        const options = {
+        const options_{{ forloop.counter }} = {
             chart:{
                 type: 'bar',
                 height: 350,
@@ -138,7 +151,7 @@
             
             series:[{
                 name: 'Concentración (Bq/m³)',
-                data: data.map(item => ({ x: new Date(item.x).getTime() - (new Date().getTimezoneOffset() * 60000), y: item.y }))
+                data: data{{ forloop.counter }}.map(item => ({ x: new Date(item.x).getTime() - (new Date().getTimezoneOffset() * 60000), y: item.y }))
             }],
             xaxis:{
                 type: 'datetime',
@@ -150,7 +163,6 @@
                 title: {
                     text: 'Bq/m³',
                 },
-
             },
             colors: ["#7267EF"],
             dataLabels: {
@@ -167,7 +179,7 @@
             },
             annotations: {
                 yaxis: [{
-                    y: media,
+                    y: media{{ forloop.counter }},
                     borderColor: '#FF9033',
                     label: {
                         borderColor: '#7267EF',
@@ -175,24 +187,24 @@
                             color: '#F6FAF8 ',
                             background: '#FF9033',
                         },
-                        text: `Media: ${media} Bq/m³`,
+                        text: `Media: ${media{{ forloop.counter }}} Bq/m³`,
                     }
                 }]
             }
         }
-        const chart = new ApexCharts(document.querySelector("#account-chart"), options);
-        chart.render();
+        const chart{{ forloop.counter }} = new ApexCharts(document.querySelector("#account-chart-dash{{ forloop.counter }}"), options_{{ forloop.counter }});
+        chart{{ forloop.counter }}.render();
 
-        function cb(start, end) {
-            $('#reportrange span').html(start.format('MMMM D, YYYY HH:mm') + ' - ' + end.format('MMMM D, YYYY HH:mm'));
+        function cb{{ forloop.counter }}(start, end) {
+            $('#reportrange{{ forloop.counter }} span').html(start.format('MMMM D, YYYY HH:mm') + ' - ' + end.format('MMMM D, YYYY HH:mm'));
             // Update the chart data based on selected date range
-            updateChart(start, end);
+            updateChart{{ forloop.counter }}(start, end);
         }
 
-        $('#reportrange').daterangepicker({
+        $('#reportrange{{ forloop.counter }}').daterangepicker({
             timePicker: true,
             timePicker24Hour: true,
-            startDate: moment().subtract(29, 'days'),
+            startDate: moment().subtract(6, 'days'),
             endDate: moment(),
             ranges: {
                 'Hoy': [moment().startOf('days'), moment()],
@@ -207,23 +219,23 @@
                 format: 'MMMM D, YYYY HH:mm',
             },
 
-        }, cb);
+        }, cb{{ forloop.counter }});
 
-        cb(moment().subtract(29, 'days'), moment());
+        cb{{ forloop.counter }}(moment().subtract(6, 'days'), moment());
 
-        function updateChart(start,end) {
+        function updateChart{{ forloop.counter }}(start,end) {
             // Filtrar los datos según el rango de fechas seleccionado
-            const filteredData = data.filter(item => {
+            const filteredData{{ forloop.counter }} = data{{ forloop.counter }}.filter(item => {
                 const date = new Date(item.x);
                 return date >= start && date <= end;
             });
             // Actualizar los datos del gráfico
-            chart.updateSeries([{
-                name: 'Concentración (Bq/m3)',
-                data: filteredData.map(item => ({ x: new Date(item.x).getTime() - (new Date().getTimezoneOffset() * 60000), y: item.y }))
+            chart{{ forloop.counter }}.updateSeries([{
+                name: 'Concentración (Bq/m³)',
+                data: filteredData{{ forloop.counter }}.map(item => ({ x: new Date(item.x).getTime() - (new Date().getTimezoneOffset() * 60000), y: item.y }))
             }]);
         }
-
+        {% endfor %}
     });
 </script>
 

@@ -1,7 +1,13 @@
 {% extends "layouts/base.html" %}
 
 {% block title %} Preferencias {% endblock %} 
-
+{% block stylesheets %}
+<style>
+    select:hover {
+        cursor: pointer;
+    }
+</style>
+{% endblock stylesheets %}
 {% block content %}
 
 <div class="pc-container">
@@ -15,7 +21,6 @@
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item">Preferencias</li>
-                            <li class="breadcrumb-item">Notificaciones email</li>
                         </ul>
                     </div>
                 </div>
@@ -32,11 +37,11 @@
             {% endif %}
             <div class="col-md-6 offset-md-3">
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header text-center bg-light">
                         <h5>Notificaciones</h5>
                     </div>
                     <div class="card-body">
-                        <form method="post" >
+                        <form method="post">
                             {% csrf_token %}
                             {{ form.as_p }}
                             <button type="submit" class="btn btn-primary"style="width: 100%">Guardar preferencias</button>

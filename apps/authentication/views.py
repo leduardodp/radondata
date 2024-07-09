@@ -24,7 +24,7 @@ def login_view(request):
                 return redirect("/")
             else:
                 messages.error(request, 'Usuario y/o contraseña incorrectos')
-                return redirect("login/")
+                return redirect("/")
         else:
             messages.error(request,'¡Algo ha ido mal! Inténtalo otra vez')
     context = {"form":form}

@@ -19,8 +19,7 @@
 								<h5 class="m-b-10">Mi cuenta</h5>
 							</div>
 							<ul class="breadcrumb">
-								<li class="breadcrumb-item"><a href="index.html">Perfil</a></li>
-								<li class="breadcrumb-item">Mi cuenta</li>
+								<li class="breadcrumb-item">Perfil</li>
 							</ul>
 						</div>
 					</div>
@@ -41,7 +40,7 @@
 				<div class="row gutters-sm">
 					<div class="col-md-4 mb-3">
 						<div class="card">
-							<div class="card-header text-center">
+							<div class="card-header text-center bg-light">
 								<h5>Foto de perfil</h5>
 							</div>
 							<div class="card-body">
@@ -49,7 +48,7 @@
 							
 									{% if user.profile_pic %}
 				
-										<img src="{{ user.profile_pic.url }}" alt="Admin" class="rounded-circle" 											width="130">
+										<img src="{{ user.profile_pic.url }}" alt="Admin" class="rounded-circle" 								width="130">
 				
 									{% else %}
 										<img src="/static/assets/images/user/no-avatar.jpg" alt="Imagen de perfil" 											class="rounded-circle" width="130">
@@ -62,7 +61,7 @@
 			</div>
 					<div class="col-md-6">
 						<div class="card mb-3">
-							<div class="card-header text-center">
+							<div class="card-header text-center bg-light">
 								<h5>Datos de usuario</h5>
 							</div>
 						<div class="card-body">

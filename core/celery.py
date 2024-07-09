@@ -20,17 +20,17 @@ app.config_from_object(settings, namespace='CELERY')
 app.conf.beat_schedule = {
     'send-mail-every-day-at-12':{
         'task': 'apps.authentication.tasks.send_notifications',
-        'schedule': crontab(hour=0, minute = 2), # cada día a las 13h
+        'schedule': crontab(hour=23, minute = 13), # cada día a las 13h
         'args': ('D',),
     },
     'send-mail-every-week-at-1': {
         'task': 'apps.authentication.tasks.send_notifications',
-        'schedule': crontab(day_of_week='1', hour=1, minute=0),  # cada lunes a las 10h
+        'schedule': crontab(day_of_week='1', hour=1, minute=0),  # cada lunes a las 
         'args': ('S',),
     },
     'send-mail-every-month-at-2': {
         'task': 'apps.authentication.tasks.send_notifications',
-        'schedule': crontab(day_of_month='1', hour=2, minute=0),  # el primer día de cada mes a las 15h
+        'schedule': crontab(day_of_month='28-31', hour =23 , minute = 55),  # el último dia del mes a las 23h 55
         'args': ('M',),
     },
     'write-data-every-minute': {
@@ -41,11 +41,19 @@ app.conf.beat_schedule = {
         'task': 'apps.home.tasks.read_daily_data',
         'schedule': crontab(minute='*/1'),  # lee datos random cada minuto
     },
-    'read-media-data-every-minute': {
+    'read-daily-media-data-every-minute': {
         'task': 'apps.home.tasks.read_daily_media_data',
-        'schedule': crontab(minute='*/1'),  # lee la media de datos random cada minuto
+        'schedule': crontab(minute='*/1'),  # lee la media diaria cada minuto
     },
-
+    'read-weekly-media-data-every-minute': {
+        'task': 'apps.home.tasks.read_weekly_media_data',
+        'schedule': crontab(minute='*/1'),  # lee la media semanal random cada minuto
+    },
+    'read-monthly-media-data-every-minute': {
+        'task': 'apps.home.tasks.read_monthly_media_data',
+        'schedule': crontab(minute='*/1'),  # lee la media mensual cada minuto
+    },
+    
 }
 
 # Cargar tareas de todos los módulos de aplicaciones registradas en Django.
