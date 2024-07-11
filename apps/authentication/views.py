@@ -1,11 +1,10 @@
-from email.headerregistry import Group
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login , logout
 from .forms import LoginForm, SignUpForm , UpdateProfileForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .decorators import unauthenticated_user
-from django.contrib.auth.models import Group
+
 
 
 # Create your views here.
@@ -21,6 +20,11 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
+                remember_me = "on" in form.data.get("remember_me", [])
+                if remember_me:
+                    request.session.set_expiry(1209600)
+                else:
+                    request.session.set_expiry(0)
                 return redirect("/")
             else:
                 messages.error(request, 'Usuario y/o contraseña incorrectos')
@@ -39,7 +43,7 @@ def register_user(request):
             username = form.cleaned_data.get("username")
 
             messages.success(request, "Usuario creado con éxito, {}\n¡Bienvenido!".format(username))
-            return redirect("login/")
+            return redirect("/")
 
         else:
             messages.error(request,' Algo ha ido mal!')

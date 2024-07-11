@@ -23,6 +23,8 @@ influxdb-client==1.42.0
 kombu==5.3.7
 pillow==10.3.0
 prompt_toolkit==3.0.47
+psycopg==3.2.1
+psycopg2==2.9.9
 pycodestyle==2.8.0
 pydotplus==2.0.2
 pyparsing==3.1.2

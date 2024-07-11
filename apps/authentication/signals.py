@@ -5,6 +5,7 @@ from .models import CustomUser
 from apps.aulas.models import Aula, Notificacion
 from PIL import Image
 
+#Añadir al usuario a un grupo por defecto
 @receiver(post_save, sender=CustomUser)
 def add_user_to_default_group(sender, instance, created, **kwargs):
     if created:

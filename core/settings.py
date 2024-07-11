@@ -1,5 +1,3 @@
-# -*- encoding: utf-8 -*-
-
 import os
 from pathlib import Path
 from django.contrib.messages import constants as messages
@@ -27,23 +25,26 @@ DEBUG = True
 # load production server from .env
 ALLOWED_HOSTS  = []
 
-# Application definition
 
 INSTALLED_APPS = [
+    #BASE APPS
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.home', # Enable the inner home (home)
+    #LOCAL APPS
+    'apps.home',
     'apps.authentication',
     'apps.aulas',
+    #EXTERNAL APPS
     'django_cleanup.apps.CleanupConfig', #Actualizar foto perfil ( borra la anterior)
     'django_celery_results',  #Log de tareas desde admin Django
     'django_celery_beat',  #Tareas programadas
     'django_extensions',  #Comandos de Django
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -85,8 +86,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql', 
+        'NAME': os.environ.get('POSTGRES_DB'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST'),
+        'PORT': os.environ.get('POSTGRES_PORT'),
     }
 }
 
@@ -146,15 +151,15 @@ AUTH_USER_MODEL = "authentication.CustomUser"
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 #EMAIL_USE_SSL = True #Send data
 EMAIL_USE_TLS = True  #Reset password
-EMAIL_HOST = os.environ['EMAIL_HOST']
-EMAIL_PORT = 587
-EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
-DEFAULT_FROM_EMAIL = os.environ['DEFAULT_FROM_EMAIL']
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 
-## Celery Settings
+## Celery Worker Settings
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  #La URL del broker de mensajería que se utilizará para enviar y recibir tareas
+CELERY_BROKER_URL = 'redis://redis:6379/0'  #La URL del broker de mensajería que se utilizará para enviar y recibir tareas
 accept_content = ['json'] #El tipo de contenido que se aceptará para las tareas
 task_serializer = 'json' #El serializador que se utilizará para serializar las tareas
 result_serializer = 'json' #El serializador que se utilizará para serializar los resultados de las tareas

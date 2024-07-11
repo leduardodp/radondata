@@ -14,7 +14,7 @@
 				<div class="row align-items-center text-center">
 					<div class="col-md-12">
 						<div class="card-body">
-							<h4 class="mb-4 f-w-400">Registra una cuenta</h4>
+							<h4 class="mb-4 f-w-200">Registra tu cuenta</h4>
 							<form role="form" method="post" action="">
 
 								{% csrf_token %}
@@ -37,20 +37,12 @@
 								</div>
 								<span class="text-error">{{ form.password1.errors }}</span>
 
-								<div class="input-group mb-4">
+								<div class="input-group mb-2">
 									<span class="input-group-text"><i data-feather="lock"></i></span>
 									{{ form.password2 }}
 								</div>			
 								<span class="text-error">{{ form.password2.errors }}</span>					
-
-								<div class="form-group text-start mt-3">
-									<div class="form-check">
-										<input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
-										<label class="form-check-label" for="flexCheckChecked">
-											Acepto recibir  <a href="#!">datos semanales</a> vía email.
-										</label>
-									</div>
-								</div>  <!-- Módulo para ver mensajes -->
+								<!-- Módulo para ver mensajes -->
 								{% if messages %}
     								{% for message in messages %}
         								<div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
@@ -66,8 +58,8 @@
 
 							</form>
 
-							<p class="mb-3">¿Ya tienes una cuenta? 
-								<a href="{% url 'login' %}" class="f-w-200">Inicia sesión</a>
+							<p class="mb-0 text-muted">¿Ya tienes una cuenta? 
+								<a href="{% url 'login' %}" class="f-w-200"style="color:#7267EF;">Inicia sesión</a>
 							</p>
 						</div>
 					</div>

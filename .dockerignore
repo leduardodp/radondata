@@ -1,0 +1,8 @@
+#Ignorar archivos y directorios innecesarios
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+.env
+.DS_store

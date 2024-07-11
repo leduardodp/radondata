@@ -1,12 +1,8 @@
-import os
-from django import template
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect 
+from django.http import HttpResponse 
 from django.template import loader
-from django.urls import reverse
 from apps.aulas.models import Aula
-from django.conf import settings
-from django.views.static import serve
+from apps.authentication.tasks import send_notifications
 from . import tasks
 import json
 
@@ -16,6 +12,7 @@ import json
 def index(request):
     context = {'segment': 'index'}
 
+    #send_notifications('D')
     # Obtén los grupos del usuario
     user_groups = request.user.groups.all()
 

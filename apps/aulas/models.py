@@ -1,5 +1,4 @@
 from django.db import models
-from django.conf import settings
 from apps.authentication.models import CustomUser
 from django.contrib.auth.models import Group
 

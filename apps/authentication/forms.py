@@ -1,8 +1,6 @@
-# -*- encoding: utf-8 -*-
 
 from django import forms
 from django.contrib.auth.forms import UserCreationForm 
-from django.contrib.auth.models import User
 from .models import CustomUser
 
 
@@ -21,6 +19,15 @@ class LoginForm(forms.Form):
                 "class": "form-control"
             }
         ))
+    remember_me = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "form-check-input"
+                }
+        ),
+        label="Recordarme"
+    )
 
 
 class SignUpForm(UserCreationForm):
@@ -56,12 +63,19 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ('username', 'email', 'password1', 'password2')
-        
-    def clean_email(self):
-        email = self.cleaned_data['email']
+    
+    #Función para comprobar si el usuario/email ya está registrado
+    def clean(self):
+        cleaned_data = super().clean()
+        username = cleaned_data.get('username')
+        email = cleaned_data.get('email')
+
+        if CustomUser.objects.filter(username=username).exists():
+            raise forms.ValidationError("Ya existe un usuario con este nombre de usuario.")
         if CustomUser.objects.filter(email=email).exists():
             raise forms.ValidationError("Ya existe un usuario con este correo electrónico.")
-        return email
+        
+        return cleaned_data
 
 
 class UpdateProfileForm(forms.ModelForm):

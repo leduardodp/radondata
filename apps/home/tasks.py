@@ -1,32 +1,25 @@
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
-import pytz
-import random , redis , json
-from django.core.mail import send_mail
+import random , redis , json , pytz
 from celery import shared_task
 from apps.aulas.models import Aula
 
 
-concentracion = 0.0
-media = 0.0
-
 #Configuración cliente InfluxDB
 client = InfluxDBClient(
-        url="http://localhost:8086",
-        token="ntbYiWCrZN8xLl-hyZze4zzCZdB28r642Xsommyepwc_H0twV-Ad0wGW5QzvwTT0nH7-EiKx0kXHmMp8JRjqGQ==",
+        url="http://influxdb:8086",
+        token="yzrojw4YvaAVFCljF0zVKU9dc4EYKqs5g0TyM0vuxI0pUnqs4mKCcKfYFcwjnmmzg4ePlu7tEn-eNbAfiVpmQw==",
         org="Universidade de Vigo",
         bucket="radon"
     )
 
 #Configuración broker Redis
-redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
+redis_client = redis.StrictRedis(host='redis', port=6379, db=0) # Se conecta al redis porque así se llama en el docker-compose
 
 @shared_task(bind=True)
 def write_data_every_minute(self):
     bucket="radon"
     write_api = client.write_api(write_options=SYNCHRONOUS)
-    #Escribir datos en influx
-    print("Ejemplo de escritura de datos en InfluxDB")
     aulas = Aula.objects.all()
     for aula in aulas: 
         p = Point("my_measurement").tag("name",str(aula)).field("concentracion", random.uniform(0, 300))
@@ -37,21 +30,13 @@ def write_data_every_minute(self):
 
 @shared_task(bind=True)
 def read_daily_data(self):
-    global concentracion
-
-    #Leer datos de influx
-    print("Ejemplo de lectura de datos en InfluxDB")
     query_api = client.query_api()
-
     # Definir la consulta
     query =  """from(bucket:"radon")    
                 |> range(start: -24h) 
                 |> filter(fn: (r) => r._measurement ==   "my_measurement")"""
     # Ejecutar la consulta
     results = query_api.query(org=client.org, query=query)
-
-    #Crear una lista para almacenar los datos
-    #data = []
     #Crear un diccionario para almacenar los datos por aula
     for result in results:
         aula_data =[]

@@ -41,15 +41,4 @@ class NotificacionAdminForm(forms.ModelForm):
         # Devuelve los datos limpios si todo está bien
         return cleaned_data
 
-        '''Cómo funciona el método clean:
-Invocado al validar el formulario: Django llama al método clean cuando se valida el formulario.
-Limpieza y validación: Dentro de este método, puedes acceder a todos los datos del formulario, realizar validaciones adicionales y, si es necesario, modificar los datos.
-Errores de validación: Si encuentras algún problema con los datos, puedes lanzar un forms.ValidationError para indicar que hay un problema con el formulario.
-Retorno de datos: El método debe devolver los datos limpios que han pasado la validación.
-En el contexto de tu aplicación:
-El propósito del método clean en tu formulario de administración es asegurarse de que la selección de aulas sea válida para el usuario seleccionado.
-Detalles clave:
-Llamada a super().clean(): Llama al método clean de la superclase (forms.ModelForm) para asegurarse de que todas las validaciones estándar de Django se apliquen antes de la validación personalizada.
-Acceso a cleaned_data: Los datos del formulario que ya han pasado la validación se almacenan en cleaned_data.
-Validación personalizada: Aquí verificamos si el usuario tiene acceso al aula seleccionado basándonos en sus grupos.
-Lanzamiento de ValidationError: Si la validación falla, lanzamos un ValidationError, que Django usará para mostrar un mensaje de error en el formulario.'''
+        
