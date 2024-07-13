@@ -1,13 +1,15 @@
 version: '3.9'
 
 services:
-# Django
+# Django Gunicorn
   web:
     build: .
     restart: always
     env_file: .env
     volumes:
       - .:/app
+      - static_volume:/app/staticfiles  # Volumen para archivos estáticos
+      - media_volume:/app/media         # Volumen para archivos cargados
     ports:
       - "8000:8000"
     depends_on:
@@ -17,7 +19,7 @@ services:
     command: >
               bash -c "python manage.py makemigrations &&
                       python manage.py migrate &&
-                      python manage.py runserver 0.0.0.0:8000"
+                      gunicorn -c gunicorn-cfg.py core.wsgi:application"
 # Celery Worker
   worker:
       build: .
@@ -70,7 +72,21 @@ services:
       - "8086:8086"
     volumes:
       - influxdb_data:/var/lib/influxdb
+# Nginx
+  nginx:
+    image: "nginx:1.27.0" 
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/local.conf:/etc/nginx/conf.d
+      - static_volume:/app/staticfiles  # Volumen compartido para archivos estáticos
+      - media_volume:/app/media         # Volumen compartido para archivos cargados
+    depends_on: 
+      - web
+
 volumes:
   postgres_data:
   influxdb_data:
-  #static:      
+  static_volume:
+  media_volume:

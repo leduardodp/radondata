@@ -9,17 +9,18 @@ services:
       - db_network
       - web_network
   nginx:
-    container_name: nginx
+    #container_name: nginx
     restart: always
-    image: "nginx:latest"
+    image: "nginx:latest" #elegir versión aquí
     ports:
-      - "85:85"
+      - "85:85"  # revisar puertos
     volumes:
       - ./nginx:/etc/nginx/conf.d
+    # - static:/sdasd/static 
     networks:
-      - web_network
+      - web_network #esto queeeeees?
     depends_on: 
-      - appseed-app
+      - appseed-app #web
 networks:
   db_network:
     driver: bridge
