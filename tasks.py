@@ -8,7 +8,7 @@ from apps.aulas.models import Aula
 #Configuración cliente InfluxDB
 client = InfluxDBClient(
         url="http://influxdb:8086",
-        token="UbP9G2bfmXZL5uD3fMo2noAxjVSs5tNniS7SWl7icuNdpxWhypw9e-Jhs-6wzYmX6s9fHDI7yadAyCg9IwykDQ==",
+        token="yzrojw4YvaAVFCljF0zVKU9dc4EYKqs5g0TyM0vuxI0pUnqs4mKCcKfYFcwjnmmzg4ePlu7tEn-eNbAfiVpmQw==",
         org="Universidade de Vigo",
         bucket="radon"
     )
