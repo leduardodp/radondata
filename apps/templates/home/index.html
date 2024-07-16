@@ -84,23 +84,26 @@
             <div class="container-fluid">
                 <div class="card mt-5">
                     <div class="card-header bg-light" >
-                        <h1 class="mb-3">{{ aula.nombre }}</h1>
+                        <h1 class="mb-3 bg-primary d-inline-block text-white p-3 " >{{ aula.nombre }}</h1>
                         <div id="account-chart" class="chart">
-                            <div class="row pb-2">
-                                <div class="col-auto m-b-10">
-                                    <h3 class="mb-1 text-center">{{ aula.media_diaria }}</h3>
-                                    <span>Concentración media diaria</span>
+                            <div class="row pb-2 ml-4">
+                                <div class="col-auto m-b-10 d-flex align-items-center ml-5" >
+                                    <h4>Concentración media:</h4>
                                 </div>
-                                <div class="col-auto m-b-10">
-                                    <h3 class="mb-1 text-center">{{ aula.media_semanal }}</h3>
-                                    <span>Concentración media semanal</span>
+                                <div class="col-auto mb-3 d-flex flex-column align-items-center mx-5">
+                                    <h3 class="mb-1 text-center text-primary">{{ aula.media_diaria }}</h3>
+                                    <span class="text-muted">Diaria</span>
                                 </div>
-                                <div class="col-auto m-b-10">
-                                    <h3 class="mb-1 text-center">{{ aula.media_mensual }}</h3>
-                                    <span>Concentración media mensual</span>
+                                <div class="col-auto mb-3 d-flex flex-column align-items-center mx-5">
+                                    <h3 class="mb-1 text-center text-primary">{{ aula.media_semanal }}</h3>
+                                    <span class="text-muted"> Semanal</span>
                                 </div>
-                                <div class="col-auto m-b-10 d-flex align-items-center" style="margin-left: 50px;">
-                                    <h4 class="font-weight:bold;">en Bq/m³</h4>
+                                <div class="col-auto mb-3 d-flex flex-column align-items-center mx-5">
+                                    <h3 class="mb-1 text-center text-primary ">{{ aula.media_mensual }}</h3>
+                                    <span class="text-muted"> Mensual</span>
+                                </div>
+                                <div class="col-auto m-b-10 d-flex align-items-center ml-5" >
+                                    <h4>Bq/m³</h4>
                                 </div>
                             </div>
                         </div>
@@ -139,20 +142,43 @@
     document.addEventListener('DOMContentLoaded', function() {
         {% for aula in aulas_info %}
         const data{{ forloop.counter }} = JSON.parse('{{ aula.json|escapejs }}');
-        const media{{ forloop.counter }} = parseFloat('{{ aula.media_diaria }}');
+        const media{{ forloop.counter }} = parseFloat('{{ aula.media_semanal }}');
         
 
         const options_{{ forloop.counter }} = {
             chart:{
-                type: 'bar',
+                type: 'area',
+                stacked: true,
                 height: 350,
                 weight: 1000,
+                zoom: {
+                    type: 'x',
+                    enabled: true,
+                    autoScaleYaxis: true
+                },
+                toolbar: {
+                    autoSelected: 'zoom'
+                }
             },
-            
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    inverseColors: false,
+                    opacityFrom: 0.75,
+                    opacityTo: 0,
+                    stops: [0, 90, 100]
+                },
+            },
             series:[{
                 name: 'Concentración (Bq/m³)',
-                data: data{{ forloop.counter }}.map(item => ({ x: new Date(item.x).getTime() - (new Date().getTimezoneOffset() * 60000), y: item.y }))
+                data: data{{ forloop.counter }}.map(item => ({ x: new Date(item.x).getTime() - (new Date().getTimezoneOffset() * 60000), y: item.y })),
+                
             }],
+            stroke :{
+                width: 2,
+
+            },
             xaxis:{
                 type: 'datetime',
                 labels: {
@@ -161,7 +187,7 @@
             },
             yaxis: {
                 title: {
-                    text: 'Bq/m³',
+                    text: 'Concentración de radón (Bq/m³)',
                 },
             },
             colors: ["#7267EF"],
@@ -181,6 +207,8 @@
                 yaxis: [{
                     y: media{{ forloop.counter }},
                     borderColor: '#FF9033',
+                    borderWidth: 1,
+                    strokeDashArray: [7.5, 5], 
                     label: {
                         borderColor: '#7267EF',
                         style: {
@@ -204,6 +232,15 @@
         $('#reportrange{{ forloop.counter }}').daterangepicker({
             timePicker: true,
             timePicker24Hour: true,
+            showDropdowns: true,
+            drops: {
+                month: {
+                    className: 'daterangepicker-input'
+                },
+                year: {
+                    className: 'daterangepicker-input'
+                }
+            },
             startDate: moment().subtract(6, 'days'),
             endDate: moment(),
             ranges: {
@@ -229,12 +266,38 @@
                 const date = new Date(item.x);
                 return date >= start && date <= end;
             });
+
+            const sum = filteredData{{ forloop.counter }}.reduce((acc, current) => acc + current.y, 0);
+            const media = sum / filteredData{{ forloop.counter }}.length;
+            
             // Actualizar los datos del gráfico
             chart{{ forloop.counter }}.updateSeries([{
                 name: 'Concentración (Bq/m³)',
                 data: filteredData{{ forloop.counter }}.map(item => ({ x: new Date(item.x).getTime() - (new Date().getTimezoneOffset() * 60000), y: item.y }))
             }]);
+            
+            chart{{ forloop.counter }}.updateOptions({
+                annotations: {
+                    yaxis: [{
+                        y: media,
+                        borderColor: '#FF9033',
+                        borderWidth: 1,
+                        strokeDashArray: [7.5, 5], 
+                        label: {
+                            borderColor: '#7267EF',
+                            style: {
+                                color: '#F6FAF8 ',
+                                background: '#FF9033',
+                            },
+                            text: `Media: ${media.toFixed(2)} Bq/m³`,
+                        }
+                    }]
+                }
+            });
+
         }
+
+        
         {% endfor %}
     });
 </script>

@@ -35,23 +35,23 @@ app.conf.beat_schedule = {
     },
     'write-data-every-minute': {
         'task': 'apps.home.tasks.write_data_every_minute',
-        'schedule': crontab(minute='*/1'),  # genera datos random cada minuto
+        'schedule': crontab(minute='*/10'),  # genera datos random cada 10 minutos
     },
     'read-data-every-minute': {
         'task': 'apps.home.tasks.read_daily_data',
-        'schedule': crontab(minute='*/1'),  # lee datos random cada minuto
+        'schedule': crontab(minute='*/10'),  # lee datos random cada 10 minutos
     },
     'read-daily-media-data-every-minute': {
         'task': 'apps.home.tasks.read_daily_media_data',
-        'schedule': crontab(minute='*/1'),  # lee la media diaria cada minuto
+        'schedule': crontab(minute='*/10'),  # lee la media diaria cada 10 minutos
     },
     'read-weekly-media-data-every-minute': {
         'task': 'apps.home.tasks.read_weekly_media_data',
-        'schedule': crontab(minute='*/1'),  # lee la media semanal random cada minuto
+        'schedule': crontab(minute='*/10'),  # lee la media semanal random cada 10 minutos
     },
     'read-monthly-media-data-every-minute': {
         'task': 'apps.home.tasks.read_monthly_media_data',
-        'schedule': crontab(minute='*/1'),  # lee la media mensual cada minuto
+        'schedule': crontab(minute='*/10'),  # lee la media mensual cada 10 minutos
     },
     
 }

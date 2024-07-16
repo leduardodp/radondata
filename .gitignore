@@ -33,3 +33,6 @@ apps/static/assets/.temp
 
 .env
 .vscode
+
+#Certificados HTTPS
+*.pem
