@@ -33,7 +33,7 @@ def read_daily_data(self):
     query_api = client.query_api()
     # Definir la consulta
     query =  """from(bucket:"radon")    
-                |> range(start: -24h) 
+                |> range(start: -63d) 
                 |> filter(fn: (r) => r._measurement ==   "my_measurement")"""
     # Ejecutar la consulta
     results = query_api.query(org=client.org, query=query)
