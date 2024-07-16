@@ -59,7 +59,7 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',
 ]
 
-CSRF_TRUSTED_ORIGINS = ['https://radondata.sytes.net/']
+CSRF_TRUSTED_ORIGINS = ['https://radondata.sytes.net']
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
