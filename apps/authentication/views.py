@@ -5,8 +5,6 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .decorators import unauthenticated_user
 
-
-
 # Create your views here.
 
 @unauthenticated_user
