@@ -1,3 +1,4 @@
+
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 import random , redis , json , pytz
@@ -5,10 +6,11 @@ from celery import shared_task
 from apps.aulas.models import Aula
 
 
+
 #Configuración cliente InfluxDB
 client = InfluxDBClient(
         url="http://influxdb:8086",
-        token="3DxIch4IxQbG4kAP3cOVmQo5YXibGTdWPTgsWR7U0u4n_kcTlUAjSqHx4f0HKVJY22AXSo2ivPcrryG0cjGtLA==",
+        token="9uOc4XHTiC0BBTcaawpk9FmsDLq2BMj2snB3bXQzZ0RAh0So__Q20SBgunOEwbRS5x1jk9Dj3wdJ6x8ozR0LKw==",
         org="Universidade de Vigo",
         bucket="radon"
     )
