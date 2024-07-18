@@ -24,7 +24,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = True
 
 # load production server from .env
-ALLOWED_HOSTS  =['https://radondata.sytes.net', 'https://64.226.86.46']
+ALLOWED_HOSTS  =['radondata.sytes.net', '64.226.86.46']
 
 
 INSTALLED_APPS = [
