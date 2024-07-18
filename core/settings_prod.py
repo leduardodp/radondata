@@ -21,7 +21,7 @@ CORE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # load production server from .env
 ALLOWED_HOSTS  =['radondata.sytes.net', '64.226.86.46']
