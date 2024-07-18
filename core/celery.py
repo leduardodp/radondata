@@ -20,12 +20,12 @@ app.config_from_object(settings, namespace='CELERY')
 app.conf.beat_schedule = {
     'send-mail-every-day-at-12':{
         'task': 'apps.authentication.tasks.send_notifications',
-        'schedule': crontab(hour=23, minute = 13), # cada día a las 13h
+        'schedule': crontab(hour=23, minute = 45), # cada día a las 23h 45
         'args': ('D',),
     },
     'send-mail-every-week-at-1': {
         'task': 'apps.authentication.tasks.send_notifications',
-        'schedule': crontab(day_of_week='1', hour=1, minute=0),  # cada lunes a las 
+        'schedule': crontab(day_of_week='1', hour=1, minute=0),  # cada lunes a las 1h
         'args': ('S',),
     },
     'send-mail-every-month-at-2': {
