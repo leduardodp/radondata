@@ -50,7 +50,7 @@ def send_notifications(self,frequency):
         
         
     for user, mensajes in notificaciones_por_usuario.items():
-        subject = f'Concentración media de radón {label}'
+        subject = f'Concentración media {label} de radón '
         email_from = 'ldagostino@alumnos.uvigo.es'
         mensaje_completo = '\n\n'.join(mensajes)  # Concatenar todos los mensajes para el usuario
         send_mail(subject, mensaje_completo, email_from, [user.email])

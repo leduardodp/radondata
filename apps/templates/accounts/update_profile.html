@@ -10,20 +10,25 @@
 	<div class="pcoded-content">
 		<!-- [ breadcrumb ] start -->
 		<div class="page-header">
-			<div class="page-block align-items-center">
-				<div class="row ">
-					<div class="col-md-12">
-						<div class="page-header-title">
-							<h5 class="m-b-10">Mi cuenta</h5>
-						</div>
-						<ul class="breadcrumb">
-							<li class="breadcrumb-item">Perfil</li>
-							<li class="breadcrumb-item">Actualiza tu perfil</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
+            <div class="page-block">
+                <div class="row align-items-center">
+                <div class="col-md-6 ">
+                    <div class="page-header-title">
+                        <h5 class="m-b-10">Inicio</h5>
+                    </div>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item">Perfil</li>
+						<li class="breadcrumb-item">Actualiza tu perfil</li>
+                    </ul>
+                </div>
+                <div class="col-md-6 d-flex justify-content-end">
+                    <a href="/">
+                    <button class="btn btn-shadow btn-primary">Volver a Inicio</button>
+                    </a>
+                </div>
+            </div>
+            </div>
+        </div>
 		<form action="" method="POST" enctype="multipart/form-data">
 			<h4 class="mt-5 ">¡Mantén tu perfil actualizado!</h4>
 			{% csrf_token %}
