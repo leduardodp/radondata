@@ -1,15 +1,5 @@
 # [Radon Data]
 
-<br />
-
-> Features
-- Modular design, clean codebase
-- `Session-Based Authentication`, Forms validation
-- `Deployment`: **Docker**, Gunicorn / Nginx
-
-<br />
-
-
 ## ✨ Quick Start in `Docker`
 
 > Get the code
@@ -29,7 +19,7 @@ Visit `http://localhost:85` in your browser. The app should be up & running.
 
 <br />
 
-![Flask Template - DashboardKit, thumbnail image.](https://user-images.githubusercontent.com/51070104/148523614-6947739e-a343-4f20-ad4c-cfaa29b71dc7.jpg)
+![image](https://github.com/user-attachments/assets/62749939-80fb-4c97-bcb3-ccda996f10f7)
 
 <br />
 
@@ -123,53 +113,6 @@ The project is coded using a simple and intuitive structure presented below:
 
 <br />
 
-
-## ✨ Deployment
-
-The app is provided with a basic configuration to be executed in [Docker](https://www.docker.com/), [Gunicorn](https://gunicorn.org/), and [Waitress](https://docs.pylonsproject.org/projects/waitress/en/stable/).
-
-### [Gunicorn](https://gunicorn.org/)
----
-
-Gunicorn 'Green Unicorn' is a Python WSGI HTTP Server for UNIX.
-
-> Install using pip
-
-```bash
-$ pip install gunicorn
-```
-> Start the app using gunicorn binary
-
-```bash
-$ gunicorn --bind=0.0.0.0:8001 core.wsgi:application
-Serving on http://localhost:8001
-```
-
-Visit `http://localhost:8001` in your browser. The app should be up & running.
-
-
-<br />
-
-### [Waitress](https://docs.pylonsproject.org/projects/waitress/en/stable/)
----
-
-Waitress (Gunicorn equivalent for Windows) is meant to be a production-quality pure-Python WSGI server with very acceptable performance. It has no dependencies except ones that live in the Python standard library.
-
-> Install using pip
-
-```bash
-$ pip install waitress
-```
-> Start the app using [waitress-serve](https://docs.pylonsproject.org/projects/waitress/en/stable/runner.html)
-
-```bash
-$ waitress-serve --port=8001 core.wsgi:application
-Serving on http://localhost:8001
-```
-
-Visit `http://localhost:8001` in your browser. The app should be up & running.
-
-<br />
 
 ## Credits & Links
 
